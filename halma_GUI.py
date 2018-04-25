@@ -165,6 +165,34 @@ class halma_GUI:
     def _start_game(self):
         self.halma_board.after(1000,self._update_clock())
 
+    # win loss detection
+    # There are 10 pegs on each team for an 8x8 board but I don't know how this is supposed to scale
+    def _check_red_wins(self):
+        for i in range(0, 3):
+            if self.halma_board[0][i] != 'red' or self.halma_board[1][i] != 'red':
+                return False
+        for i in range(0, 2):
+            if self.halma_board[2][i] != 'red':
+                return False
+        if self.halma_board[3][0] != 'red':
+            return False
+        return True
+
+    # There are always 10 pegs regardless of board size
+    def _check_green_wins(self):
+        for i in range(-1, -5, -1):
+            if self.halma_board[len(self.board_size) - 1][i] != 'green':
+                return False
+        for i in range(-1, -4, -1):
+            if self.halma_board[len(self.board_size) - 2][i] != 'green':
+                return False
+        for i in range(-1, -3, -1):
+            if self.halma_board[len(self.board_size) - 3][i] != 'green':
+                return False
+        if self.halma_board[len(self.board_size) - 4][-1] != 'green':
+            return False
+        return True
+
     # we are at the end of the board setup. the functions below are used for move logic.
 
     # this function given an index for the row and column position
