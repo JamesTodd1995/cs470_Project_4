@@ -43,7 +43,7 @@ class halma_GUI:
         self._set_up_start_button()
 
 # These sets of function are used to setup the GUI.
-# What I mean by setup or set_up is create all of the base widgets needed to make the GUI.
+# What I mean by setup or setup is create all of the base widgets needed to make the GUI.
 
     # this function makes the main GUI object, this is saved as self.halma_board
     def _make_TK_GUI(self):
@@ -84,8 +84,8 @@ class halma_GUI:
     # this is just an internal board of the game buttons.
     # this is so we can look at the button and see what color it is.
     # white is a open space.
-    # red is player 2
-    # green is player 1
+    # green is player 2
+    # red is player 1
     # gray is a valid move.
     def _set_up_internal_board(self):
         self.internal_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
@@ -94,21 +94,21 @@ class halma_GUI:
     def _set_up_pawns(self):
         for row in range(3):
             for column in range(3):
-                self.internal_board[row][column].configure(bg="green")
-                self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="red")
+                self.internal_board[row][column].configure(bg="red")
+                self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="green")
         self._set_up_side_pawns()
 
     # I did not know how to make a clean for loop to place all of the pawns, so this gets the rest of them.
     def _set_up_side_pawns(self):
-        self.internal_board[0][3].configure(bg="green")
-        self.internal_board[1][3].configure(bg="green")
-        self.internal_board[3][0].configure(bg="green")
-        self.internal_board[3][1].configure(bg="green")
+        self.internal_board[0][3].configure(bg="red")
+        self.internal_board[1][3].configure(bg="red")
+        self.internal_board[3][0].configure(bg="red")
+        self.internal_board[3][1].configure(bg="red")
 
-        self.internal_board[self.board_size - 1][self.board_size - 4].configure(bg="red")
-        self.internal_board[self.board_size - 2][self.board_size - 4].configure(bg="red")
-        self.internal_board[self.board_size - 4][self.board_size - 1].configure(bg="red")
-        self.internal_board[self.board_size - 4][self.board_size - 2].configure(bg="red")
+        self.internal_board[self.board_size - 1][self.board_size - 4].configure(bg="green")
+        self.internal_board[self.board_size - 2][self.board_size - 4].configure(bg="green")
+        self.internal_board[self.board_size - 4][self.board_size - 1].configure(bg="green")
+        self.internal_board[self.board_size - 4][self.board_size - 2].configure(bg="green")
 
 
         #image = PhotoImage(file="blank.gif").subsample(2,2)
@@ -137,9 +137,9 @@ class halma_GUI:
         label.configure(bg='white')
         self.player_label = label
 
-    # this setups a timer so we can see the clock run down.
+    # this sets up a timer so we can see the clock run down.
     def _set_up_timer(self):
-        label = Label(self.halma_board, text="Timer: 120 seconds remaining")
+        label = Label(self.halma_board, text="Timer: 180 seconds remaining")
         label.grid(row=1,column=0)
         label.configure(bg='white')
         self.timer_Label = label
@@ -261,8 +261,8 @@ class halma_GUI:
 
         if look_here_y + temp_y >= 0 and look_here_x + temp_x >= 0 and look_here_y + temp_y != self.board_size and \
                                 look_here_x + temp_x != self.board_size:
-            if self.internal_board[look_here_x][look_here_y].cget('bg') == 'green' or \
-               self.internal_board[look_here_x][look_here_y].cget('bg') == 'red':
+            if self.internal_board[look_here_x][look_here_y].cget('bg') == 'red' or \
+               self.internal_board[look_here_x][look_here_y].cget('bg') == 'green':
 
                 if self.internal_board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'white':
                     self.internal_board[look_here_x + temp_x][look_here_y + temp_y].configure(bg='gray')
@@ -320,14 +320,14 @@ class halma_GUI:
     #       start move = false, or over
 
     def _start_move_sequence(self,row_position, column_position):
-        if self.player == 1 and self.internal_board[row_position][column_position].cget('bg') == 'green':
+        if self.player == 1 and self.internal_board[row_position][column_position].cget('bg') == 'red':
             self._clean_highlight()
             self.pawn_in_play = (row_position, column_position)
             adjacent_squares = self._get_adjacent_squares(row_position, column_position)
             self.jump_list = self._get_jumping_squares(adjacent_squares)
             self._highlight_adjacent_squares(adjacent_squares)
             self.start_move = False
-        elif self.player == 2 and self.internal_board[row_position][column_position].cget('bg') == 'red':
+        elif self.player == 2 and self.internal_board[row_position][column_position].cget('bg') == 'green':
             self._clean_highlight()
             self.pawn_in_play = (row_position, column_position)
             adjacent_squares = self._get_adjacent_squares(row_position, column_position)
@@ -347,10 +347,10 @@ class halma_GUI:
         test_color = self.internal_board[row_position][column_position].cget('bg')
         if test_color == 'gray':
             if self.player == 1:
-                self._players_move(row_position, column_position, 'green')
+                self._players_move(row_position, column_position, 'red')
 
             elif self.player == 2:
-                self._players_move(row_position, column_position, 'red')
+                self._players_move(row_position, column_position, 'green')
 
     # this is a helper method for _move_pawn.
     # this will color in spot the player selected.
@@ -400,7 +400,7 @@ class halma_GUI:
                 self._clean_highlight()
                 self.player_label.configure(text=string)
                 self.has_jumped = False
-                self.timer_Label.configure(text="Timer: 120 seconds remaining")
+                self.timer_Label.configure(text="Timer: 180 seconds remaining")
             else:
                 self.start_move = True
                 self.has_jumped = True
@@ -412,12 +412,4 @@ class halma_GUI:
             string = "Player's " + str(self.player) +" turn"
             self.player_label.configure(text=string)
             self.has_jumped = False
-            self.timer_Label.configure(text="Timer: 120 seconds remaining")
-
-
-
-
-
-''' unit tests '''
-test = halma_GUI(8)
-test.run()
+            self.timer_Label.configure(text="Timer: 180 seconds remaining")
