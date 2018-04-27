@@ -169,28 +169,30 @@ class halma_GUI:
     # There are 10 pegs on each team for an 8x8 board but I don't know how this is supposed to scale
     def _check_red_wins(self):
         for i in range(0, 3):
-            if self.halma_board[0][i] != 'red' or self.halma_board[1][i] != 'red':
+            if self.internal_board[0][i].cget('bg') != 'red' or self.internal_board[1][i].cget('bg') != 'red':
                 return False
         for i in range(0, 2):
-            if self.halma_board[2][i] != 'red':
+            if self.internal_board[2][i].cget('bg') != 'red':
                 return False
-        if self.halma_board[3][0] != 'red':
+        if self.internal_board[3][0].cget('bg') != 'red':
             return False
+        print("Red Wins")
         return True
 
     # There are always 10 pegs regardless of board size
     def _check_green_wins(self):
         for i in range(-1, -5, -1):
-            if self.halma_board[len(self.board_size) - 1][i] != 'green':
+            if self.internal_board[self.board_size - 1][i].cget('bg') != 'green':
                 return False
         for i in range(-1, -4, -1):
-            if self.halma_board[len(self.board_size) - 2][i] != 'green':
+            if self.internal_board[self.board_size - 2][i].cget('bg') != 'green':
                 return False
         for i in range(-1, -3, -1):
-            if self.halma_board[len(self.board_size) - 3][i] != 'green':
+            if self.internal_board[self.board_size - 3][i].cget('bg') != 'green':
                 return False
-        if self.halma_board[len(self.board_size) - 4][-1] != 'green':
+        if self.internal_board[self.board_size - 4][-1].cget('bg') != 'green':
             return False
+        print("Green Wins")
         return True
 
     # we are at the end of the board setup. the functions below are used for move logic.
@@ -307,6 +309,8 @@ class halma_GUI:
             self.player_label.configure(text=string)
             self.has_jumped = False
             self._clean_highlight()
+            self._check_red_wins()
+            self._check_green_wins()
         else:
             self._move_pawn(row_position, column_position)
 
@@ -398,6 +402,8 @@ class halma_GUI:
                 self.start_move = True
                 string = "Player's " + str(self.player) + " turn"
                 self._clean_highlight()
+                self._check_red_wins()
+                self._check_green_wins()
                 self.player_label.configure(text=string)
                 self.has_jumped = False
                 self.timer_Label.configure(text="Timer: 180 seconds remaining")
@@ -411,5 +417,7 @@ class halma_GUI:
             self.start_move = True
             string = "Player's " + str(self.player) +" turn"
             self.player_label.configure(text=string)
+            self._check_red_wins()
+            self._check_green_wins()
             self.has_jumped = False
             self.timer_Label.configure(text="Timer: 180 seconds remaining")
