@@ -24,6 +24,7 @@ class halma_GUI:
     app_GUI = None
     board_size = 8
     player = 1
+    status_label = None
 
     def __init__(self, board_size):
         if board_size >= 8:
@@ -41,6 +42,7 @@ class halma_GUI:
         self._set_up_player_label()
         self._set_up_timer()
         self._set_up_start_button()
+        self._set_up_status()
 
 # These sets of function are used to setup the GUI.
 # What I mean by setup or setup is create all of the base widgets needed to make the GUI.
@@ -51,7 +53,7 @@ class halma_GUI:
 
     # this function will give the GUI a title.  you can see it in the upper left corner of the GUI
     def _set_name_to_board(self):
-        self.halma_board.title("Halma board")
+        self.halma_board.title("Halma")
 
     # this function sets the default pixels size of the board
     def _set_default_window_size(self):
@@ -84,8 +86,8 @@ class halma_GUI:
     # this is just an internal board of the game buttons.
     # this is so we can look at the button and see what color it is.
     # white is a open space.
-    # green is player 2
     # red is player 1
+    # green is player 2
     # gray is a valid move.
     def _set_up_internal_board(self):
         self.internal_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
@@ -94,21 +96,21 @@ class halma_GUI:
     def _set_up_pawns(self):
         for row in range(3):
             for column in range(3):
-                self.internal_board[row][column].configure(bg="red")
-                self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="green")
+                self.internal_board[row][column].configure(bg="green")
+                self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="red")
         self._set_up_side_pawns()
 
     # I did not know how to make a clean for loop to place all of the pawns, so this gets the rest of them.
     def _set_up_side_pawns(self):
-        self.internal_board[0][3].configure(bg="red")
-        self.internal_board[1][3].configure(bg="red")
-        self.internal_board[3][0].configure(bg="red")
-        self.internal_board[3][1].configure(bg="red")
+        self.internal_board[0][3].configure(bg="green")
+        self.internal_board[1][3].configure(bg="green")
+        self.internal_board[3][0].configure(bg="green")
+        self.internal_board[3][1].configure(bg="green")
 
-        self.internal_board[self.board_size - 1][self.board_size - 4].configure(bg="green")
-        self.internal_board[self.board_size - 2][self.board_size - 4].configure(bg="green")
-        self.internal_board[self.board_size - 4][self.board_size - 1].configure(bg="green")
-        self.internal_board[self.board_size - 4][self.board_size - 2].configure(bg="green")
+        self.internal_board[self.board_size - 1][self.board_size - 4].configure(bg="red")
+        self.internal_board[self.board_size - 2][self.board_size - 4].configure(bg="red")
+        self.internal_board[self.board_size - 4][self.board_size - 1].configure(bg="red")
+        self.internal_board[self.board_size - 4][self.board_size - 2].configure(bg="red")
 
 
         #image = PhotoImage(file="blank.gif").subsample(2,2)
@@ -132,7 +134,7 @@ class halma_GUI:
 
     # this setup the player label in the top left so we can see whos turn it is. also it is saved as self.player_label
     def _set_up_player_label(self):
-        label = Label(self.halma_board, text="Player's 1 turn")
+        label = Label(self.halma_board, text="Player 1's (red) turn")
         label.grid(row=0,column=0)
         label.configure(bg='white')
         self.player_label = label
@@ -143,6 +145,12 @@ class halma_GUI:
         label.grid(row=1,column=0)
         label.configure(bg='white')
         self.timer_Label = label
+
+    def _set_up_status(self):
+        label = Label(self.halma_board, text="Game Ready")
+        label.grid(row=3,column=0)
+        label.configure(bg='white')
+        self.status_label = label
 
     # this is a recursive function the gets played in the background. the main GUI object handles it.
     # all it does is count down the timer.
@@ -164,35 +172,43 @@ class halma_GUI:
     # function call for the start button. which starts the timer.
     def _start_game(self):
         self.halma_board.after(1000,self._update_clock())
+        string = "Game Started"
+        self.status_label.configure(text=string)
 
-    # win loss detection
-    # There are 10 pegs on each team for an 8x8 board but I don't know how this is supposed to scale
+    # red wins when all of its pieces are in the bottom right corner
+    # loops through top left 4x4 square ignoring non-goal zones,
+    # checks that each one is colored red
+    # if both loops terminate without the method returning,
+    # red is in a win state
     def _check_red_wins(self):
-        for i in range(0, 3):
-            if self.internal_board[0][i].cget('bg') != 'red' or self.internal_board[1][i].cget('bg') != 'red':
-                return False
-        for i in range(0, 2):
-            if self.internal_board[2][i].cget('bg') != 'red':
-                return False
-        if self.internal_board[3][0].cget('bg') != 'red':
-            return False
-        print("Red Wins")
+        for i in range(0,3):
+            for j in range(0,3):
+                if (i + j) == 5 or (i + j) == 6:
+                    # skip
+                    print("")
+                elif self.internal_board[self.board_size - (1 + i)][self.board_size - (1+ j)].cget('bg') != 'red':
+                    return False
+        string = "Player 1 (red) wins."
+        self.status_label.configure(text=string)
+        print("Red wins")
         return True
 
-    # There are always 10 pegs regardless of board size
+    # green wins when all of its pieces are in the top left corner
+    # loops through top left 4x4 square ignoring non-goal zones,
+    # checks that each one is colored green
+    # if both loops terminate without the method returning,
+    # green is in a win state
     def _check_green_wins(self):
-        for i in range(-1, -5, -1):
-            if self.internal_board[self.board_size - 1][i].cget('bg') != 'green':
-                return False
-        for i in range(-1, -4, -1):
-            if self.internal_board[self.board_size - 2][i].cget('bg') != 'green':
-                return False
-        for i in range(-1, -3, -1):
-            if self.internal_board[self.board_size - 3][i].cget('bg') != 'green':
-                return False
-        if self.internal_board[self.board_size - 4][-1].cget('bg') != 'green':
-            return False
-        print("Green Wins")
+        for i in range(0,3):
+            for j in range(0,3):
+                if (i + j) == 5 or (i + j) == 6:
+                    # skip
+                    print("")
+                elif self.internal_board[i][j].cget('bg') != 'green':
+                    return False
+        string = "Player 2 (green) wins."
+        self.status_label.configure(text=string)
+        print("Green wins")
         return True
 
     # we are at the end of the board setup. the functions below are used for move logic.
@@ -292,6 +308,7 @@ class halma_GUI:
     #           else the player wants to move is pawn to a gray spot.
     #       elif the player did a jump move and can jump again but they don't want too.
     #           this is because they re-picked the active pawn to end their turn.
+    #           When turn ends, check if either side is a victor
     #       else the player want to jump again.
     def move(self, row_position, column_position):
         if not self.has_jumped:
@@ -305,11 +322,16 @@ class halma_GUI:
             self.pawn_in_play = None
             self.player = 3 - self.player
             self.start_move = True
-            string = "Player's " + str(self.player) +" turn"
+            if self.player == 1:
+                color = "red"
+            else:
+                color = "green"
+            self.start_move = True
+            string = "Player " + str(self.player) + "'s (" + color + ") turn"
             self.player_label.configure(text=string)
             self.has_jumped = False
-            self._clean_highlight()
-            self._check_red_wins()
+            #self._clean_highlight()
+            #self._check_red_wins()
             self._check_green_wins()
         else:
             self._move_pawn(row_position, column_position)
@@ -388,6 +410,7 @@ class halma_GUI:
 
     def _players_move(self, row_position, column_position, color):
         self.internal_board[row_position][column_position].configure(bg=color)
+        # TODO update this part of the method to color the moved pawn and previous space each time
         self.internal_board[self.pawn_in_play[0]][self.pawn_in_play[1]].configure(bg='white')
         self._clean_highlight()
         if (row_position, column_position) in self.jump_list:
@@ -399,8 +422,12 @@ class halma_GUI:
             if len(self.jump_list) == 0:
                 self.pawn_in_play = None
                 self.player = 3 - self.player
+                if self.player == 1:
+                    color = "red"
+                else:
+                    color = "green"
                 self.start_move = True
-                string = "Player's " + str(self.player) + " turn"
+                string = "Player " + str(self.player) + "'s (" + color + ") turn"
                 self._clean_highlight()
                 self._check_red_wins()
                 self._check_green_wins()
@@ -415,9 +442,15 @@ class halma_GUI:
             self.pawn_in_play = None
             self.player = 3 - self.player
             self.start_move = True
-            string = "Player's " + str(self.player) +" turn"
-            self.player_label.configure(text=string)
+            if self.player == 1:
+                color = "red"
+            else:
+                color = "green"
+            string = "Player " + str(self.player) + "'s (" + color + ") turn"
             self._check_red_wins()
             self._check_green_wins()
+            self.player_label.configure(text=string)
             self.has_jumped = False
             self.timer_Label.configure(text="Timer: 180 seconds remaining")
+
+    #def _place_pawn(self, row, column):
