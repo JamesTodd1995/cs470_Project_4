@@ -211,6 +211,31 @@ class halma_GUI:
         print("Green wins")
         return True
 
+    # gets all the peg locations of a certain color, foundation for AI movement
+    # returns a list of all locations where pegs exists for this player
+    def _get_all_peg_positions(self, player, row_position, column_position, peg_locations):
+        if column_position <= len(self.internal_board[0]) - 1 and row_position <= len(self.internal_board) - 1:
+            if self.internal_board[row_position][column_position].cget('bg') == player:
+                peg_locations.append([row_position, column_position])
+            if column_position == len(self.internal_board[0]) - 1:
+                return self._get_all_peg_positions(player, row_position + 1, 0, peg_locations)
+            else:
+                return self._get_all_peg_positions(player, row_position, column_position + 1, peg_locations)
+        else:
+            return peg_locations
+
+    # gets all the pegs adjacent squares for the current player
+    # returns in the format ==> [[[0,0], (1, 0), (0, 1), (1, 1)]] where [0, 0] is the checked peg, and the others are what are adjacent to it
+    def _get_all_peg_adjacency(self, all_moves, all_adjacencies):
+        print('all_moves length:', len(all_moves))
+        print('all_moves:', all_moves)
+        if len(all_moves) == 0:
+            return all_adjacencies
+        all_adjacencies.append([all_moves[0], self._get_adjacent_squares(all_moves[0][0], all_moves[0][1])])
+        del all_moves[0]
+        print('got here')
+        return self._get_all_peg_adjacency(all_moves, all_adjacencies)
+
     # we are at the end of the board setup. the functions below are used for move logic.
 
     # this function given an index for the row and column position
@@ -311,6 +336,10 @@ class halma_GUI:
     #           When turn ends, check if either side is a victor
     #       else the player want to jump again.
     def move(self, row_position, column_position):
+        all_pegs = self._get_all_peg_positions(self.internal_board[row_position][column_position].cget('bg'), 0, 0, [])
+        all_adj = self._get_all_peg_adjacency(all_pegs, [])
+        print(all_pegs)
+        print(all_adj)
         if not self.has_jumped:
             if self.start_move:
                 self._start_move_sequence(row_position, column_position)
