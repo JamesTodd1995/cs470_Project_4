@@ -233,12 +233,10 @@ class halma_GUI:
         del all_moves[0]
         return self._get_all_peg_adjacency(all_moves, all_adjacencies)
 
-    def _distance_to_goal(self, player, peg_location):
-        goal_coor = [len(self.internal_board) - 1, len(self.internal_board[0]) - 1] # set goal to reds corner
+    # calculates simple straight line distance from a peg to the other corner of the board
+    def _distance_to_goal(self, curr_location, goal_location):
         distance_to_goal = 0
-        if player == 'red':
-            goal_coor = [0, 0]
-        distance_to_goal = math.sqrt(((peg_location[1] - goal_coor[1]) ** 2) + ((peg_location[0] - goal_coor[0]) ** 2))
+        distance_to_goal = math.sqrt(((curr_location[1] - goal_location[1]) ** 2) + ((curr_location[0] - goal_location[0]) ** 2)) # calc. straight line distance
         return distance_to_goal
 
     # we are at the end of the board setup. the functions below are used for move logic.
@@ -386,7 +384,11 @@ class halma_GUI:
         print('row:',row_position)
         print('col:',column_position)
         print('all_adj:',all_adj)
-        print('dist_to_goal:', self._distance_to_goal(player_color, [row_position, column_position]))
+        if player_color == 'red':
+            dist = self._distance_to_goal([row_position, column_position], [0, 0])
+        else:
+            dist = self._distance_to_goal([row_position, column_position], [len(self.internal_board) - 1, len(self.internal_board[0]) - 1])
+        print('dist_to_goal:', dist)
 
         if self.player == 1 and self.internal_board[row_position][column_position].cget('bg') == 'red':
             self._clean_highlight()
