@@ -8,7 +8,7 @@
 # 3. a stop button
 # 4. a pause button
 from tkinter import *
-
+import math
 
 class halma_GUI:
     alphabet =["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
@@ -225,16 +225,21 @@ class halma_GUI:
             return peg_locations
 
     # gets all the pegs adjacent squares for the current player
-    # returns in the format ==> [[[0,0], (1, 0), (0, 1), (1, 1)]] where [0, 0] is the checked peg, and the others are what are adjacent to it
+    # returns in the format ==> [[[0,0], (1, 0), (0, 1), (1, 1)]] where [0, 0] is the checked peg, and the others are adjacent to it
     def _get_all_peg_adjacency(self, all_moves, all_adjacencies):
-        print('all_moves length:', len(all_moves))
-        print('all_moves:', all_moves)
         if len(all_moves) == 0:
             return all_adjacencies
         all_adjacencies.append([all_moves[0], self._get_adjacent_squares(all_moves[0][0], all_moves[0][1])])
         del all_moves[0]
-        print('got here')
         return self._get_all_peg_adjacency(all_moves, all_adjacencies)
+
+    def _distance_to_goal(self, player, peg_location):
+        goal_coor = [len(self.internal_board) - 1, len(self.internal_board[0]) - 1] # set goal to reds corner
+        distance_to_goal = 0
+        if player == 'red':
+            goal_coor = [0, 0]
+        distance_to_goal = math.sqrt(((peg_location[1] - goal_coor[1]) ** 2) + ((peg_location[0] - goal_coor[0]) ** 2))
+        return distance_to_goal
 
     # we are at the end of the board setup. the functions below are used for move logic.
 
@@ -300,8 +305,6 @@ class halma_GUI:
         temp_y = (square[1] - square_in_question[1])
         look_here_x = temp_x + square_in_question[0]
         look_here_y = temp_y + square_in_question[1]
-
-
         if look_here_y + temp_y >= 0 and look_here_x + temp_x >= 0 and look_here_y + temp_y != self.board_size and \
                                 look_here_x + temp_x != self.board_size:
             if self.internal_board[look_here_x][look_here_y].cget('bg') == 'red' or \
@@ -336,10 +339,6 @@ class halma_GUI:
     #           When turn ends, check if either side is a victor
     #       else the player want to jump again.
     def move(self, row_position, column_position):
-        all_pegs = self._get_all_peg_positions(self.internal_board[row_position][column_position].cget('bg'), 0, 0, [])
-        all_adj = self._get_all_peg_adjacency(all_pegs, [])
-        print(all_pegs)
-        print(all_adj)
         if not self.has_jumped:
             if self.start_move:
                 self._start_move_sequence(row_position, column_position)
@@ -375,6 +374,20 @@ class halma_GUI:
     #       start move = false, or over
 
     def _start_move_sequence(self,row_position, column_position):
+        # for testing here, we will change where this stuff is called
+        if self.player == 1:
+            player_color = 'red'
+        else:
+            player_color = 'green'
+        all_pegs = self._get_all_peg_positions(player_color, 0, 0, [])
+        all_adj = self._get_all_peg_adjacency(all_pegs, [])
+
+        print(all_pegs)
+        print('row:',row_position)
+        print('col:',column_position)
+        print('all_adj:',all_adj)
+        print('dist_to_goal:', self._distance_to_goal(player_color, [row_position, column_position]))
+
         if self.player == 1 and self.internal_board[row_position][column_position].cget('bg') == 'red':
             self._clean_highlight()
             self.pawn_in_play = (row_position, column_position)
@@ -410,7 +423,7 @@ class halma_GUI:
     # this is a helper method for _move_pawn.
     # this will color in spot the player selected.
     # set its old spot white.
-    # clean the highlighted spotes.
+    # clean the highlighted spots.
     # and then looks to see if the move the player did was a jump move.
     # if so:
     #   set the old move to the pawn in play, this was the old spot you moved from.
