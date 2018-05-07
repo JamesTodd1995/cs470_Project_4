@@ -13,6 +13,7 @@ import math
 class halma_GUI:
     alphabet =["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     internal_board = None
+    string_board = None
     pawn_in_play = None
     player_label = None
     halma_board = None
@@ -45,8 +46,8 @@ class halma_GUI:
         self._set_up_timer()
         self._set_up_start_button()
         self._set_up_status()
-        self.green_goal = (self.board_size-1,self.board_size-1)
-        self.red_goal = (0,0)
+        self.green_goal = (0,0)
+        self.red_goal = (self.board_size-1,self.board_size-1)
 
 # These sets of function are used to setup the GUI.
 # What I mean by setup or setup is create all of the base widgets needed to make the GUI.
@@ -95,13 +96,16 @@ class halma_GUI:
     # gray is a valid move.
     def _set_up_internal_board(self):
         self.internal_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
+        self.string_board = [['w' for x in range(self.board_size)] for y in range(self.board_size)]
 
     # this gose and colors in where the pawns should be.
     def _set_up_pawns(self):
         for row in range(3):
             for column in range(3):
                 self.internal_board[row][column].configure(bg="red")
+                self.string_board[row][column] = 'r'
                 self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="green")
+                self.string_board[self.board_size - row - 1][self.board_size - column - 1] = 'g'
         self._set_up_side_pawns()
 
     # I did not know how to make a clean for loop to place all of the pawns, so this gets the rest of them.
@@ -110,12 +114,19 @@ class halma_GUI:
         self.internal_board[1][3].configure(bg="red")
         self.internal_board[3][0].configure(bg="red")
         self.internal_board[3][1].configure(bg="red")
+        self.string_board[0][3] = 'r'
+        self.string_board[1][3] = 'r'
+        self.string_board[3][0] = 'r'
+        self.string_board[3][1] = 'r'
 
         self.internal_board[self.board_size - 1][self.board_size - 4].configure(bg="green")
         self.internal_board[self.board_size - 2][self.board_size - 4].configure(bg="green")
         self.internal_board[self.board_size - 4][self.board_size - 1].configure(bg="green")
         self.internal_board[self.board_size - 4][self.board_size - 2].configure(bg="green")
-
+        self.string_board[self.board_size - 1][self.board_size - 4] = 'g'
+        self.string_board[self.board_size - 2][self.board_size - 4] = 'g'
+        self.string_board[self.board_size - 4][self.board_size - 1] = 'g'
+        self.string_board[self.board_size - 4][self.board_size - 2] = 'g'
 
         #image = PhotoImage(file="blank.gif").subsample(2,2)
         #button = self.internal_board[row][column]
@@ -280,16 +291,22 @@ class halma_GUI:
     def _highlight_adjacent_squares(self, adjacent_squares):
         for square in adjacent_squares:
             test_color = self.internal_board[square[0]][square[1]].cget('bg')
+            test_string = self.string_board[square[0]][square[1]]
             if test_color == 'white':
                 self.internal_board[square[0]][square[1]].configure(bg='gray')
+            if test_string == 'w':
+                self.string_board[square[0]][square[1]] = 'm'
 
     # this will change all of the gray buttons back to white buttons
     def _clean_highlight(self):
         for row in range(self.board_size):
             for column in range(self.board_size):
                 test_color = self.internal_board[row][column].cget('bg')
+                test_string = self.string_board[row][column]
                 if test_color == 'gray':
                     self.internal_board[row][column].configure(bg='white')
+                if test_string == 'm':
+                    self.string_board[row][column] = 'w'
 
     # so what this does is looks within the adjacent_squares list and looks to see if there are valid jumping spots.
     # if so make them gray!
@@ -314,6 +331,7 @@ class halma_GUI:
 
                 if self.internal_board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'white':
                     self.internal_board[look_here_x + temp_x][look_here_y + temp_y].configure(bg='gray')
+                    self.string_board[look_here_x + temp_x][look_here_y + temp_y] = 'm'
                     return look_here_x + temp_x, look_here_y + temp_y
 
     # this will change all of the adjcent squares back to white
@@ -389,9 +407,9 @@ class halma_GUI:
         all_adj = self._get_all_peg_adjacency(all_pegs, [])
 
         if player_color == 'red':
-            dist = self._distance_to_goal([row_position, column_position], [0, 0])
+            dist = self._distance_to_goal([row_position, column_position], [self.board_size-1,self.board_size-1])
         else:
-            dist = self._distance_to_goal([row_position, column_position], [len(self.internal_board) - 1, len(self.internal_board[0]) - 1])
+            dist = self._distance_to_goal([row_position, column_position], [0,0])
 
 
         if self.player == 1 and self.internal_board[row_position][column_position].cget('bg') == 'red':
@@ -458,8 +476,14 @@ class halma_GUI:
 
     def _players_move(self, row_position, column_position, color):
         self.internal_board[row_position][column_position].configure(bg=color)
+        # update the string representation of the board
+        if color == 'red':
+            self.string_board[row_position][column_position] = 'r'
+        elif color == 'green':
+            self.string_board[row_position][column_position] = 'g'
         # TODO update this part of the method to color the moved pawn and previous space each time
         self.internal_board[self.pawn_in_play[0]][self.pawn_in_play[1]].configure(bg='white')
+        self.string_board[self.pawn_in_play[0]][self.pawn_in_play[1]] = 'w'
         self._clean_highlight()
         if (row_position, column_position) in self.jump_list:
             self.old_move = self.pawn_in_play
@@ -486,6 +510,7 @@ class halma_GUI:
                 self.start_move = True
                 self.has_jumped = True
                 self.internal_board[self.old_move[0]][self.old_move[1]].configure(bg='white')
+                self.string_board[self.old_move[0]][self.old_move[1]] = 'w'
         else:
             self.pawn_in_play = None
             self.player = 3 - self.player
@@ -506,11 +531,17 @@ class halma_GUI:
         print("==============================================")
         print("==============================================")
         current_board = self.internal_board
-        self._test_print_moves_list(self._make_internal_move_list_for('red', current_board))
+        #self._test_print_moves_list(self._make_internal_move_list_for('red', current_board))
         print("==============================================")
-        self._test_print_moves_list(self._flatten_move_list(self._make_internal_move_list_for('red', current_board)))
+        #self._test_print_moves_list(self._flatten_move_list(self._make_internal_move_list_for('red', current_board)))
         print("==============================================")
-
+        for column in range(self.board_size):
+            print("| ", end="")
+            for row in range(self.board_size):
+                print(self.string_board[row][column], " | ", end="")
+            print()
+        print("==============================================")
+        print(self._minimax(False))
         print("==============================================")
         print("==============================================")
         #self._test_print_moves_list(self._make_internal_move_list_for('green'))
@@ -533,16 +564,19 @@ class halma_GUI:
 
     def _make_internal_move_list_for(self, color, board):
         returning_full_move_list = []
-
+        if color == 'red':
+            string_color_match = 'r'
+        else:
+            string_color_match = 'g'
         for column in range(self.board_size):
 
             for row in range(self.board_size):
-                pawn = board[row][column].cget('bg')
-                if pawn == color:
+                #pawn = board[row][column].cget('bg')
+                pawn = board[row][column]
+                if pawn == string_color_match:
                     adjacent_squares = self._get_adjacent_squares(row, column)
                     temp_list = []
                     if color is 'red':
-
                         this_pawn = (row, column, self._distance_to_goal((row, column), self.red_goal))
                         temp_list = self._get_possible_jump_list((row, column), adjacent_squares, board)
                         temp_list = self._write_values_to_jumping_moves(temp_list, color)
@@ -560,12 +594,12 @@ class halma_GUI:
     def _get_valid_moves_from_adjacent_squares(self, adjacent_squares, color, board):
         returning_move_list = []
         for move in adjacent_squares:
-            test_color = board[move[0]][move[1]].cget('bg')
-            if test_color == 'white' or test_color == 'gray':
+            #test_color = board[move[0]][move[1]].cget('bg')
+            test_color = board[move[0]][move[1]]
+            #if test_color == 'white' or test_color == 'gray':
+            if test_color == 'w' or test_color == 'm':
                 if color is 'red':
-
                     returning_move_list.append((move[0], move[1], self._distance_to_goal(move, self.red_goal)))
-
                 else:
                     returning_move_list.append((move[0], move[1], self._distance_to_goal(move, self.green_goal)))
         return returning_move_list
@@ -622,11 +656,15 @@ class halma_GUI:
         look_here_y = temp_y + square_in_question[1]
         if look_here_y + temp_y >= 0 and look_here_x + temp_x >= 0 and look_here_y + temp_y < self.board_size and \
                                 look_here_x + temp_x < self.board_size:
-            if board[look_here_x][look_here_y].cget('bg') == 'red' or \
-                            board[look_here_x][look_here_y].cget('bg') == 'green':
+            #if board[look_here_x][look_here_y].cget('bg') == 'red' or \
+            #                board[look_here_x][look_here_y].cget('bg') == 'green':
+            if board[look_here_x][look_here_y] == 'r' or \
+                            board[look_here_x][look_here_y] == 'g':
 
-                if board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'gray' or \
-                   board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'white':
+                #if board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'gray' or \
+                #   board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'white':
+                if board[look_here_x + temp_x][look_here_y + temp_y] == 'm' or \
+                   board[look_here_x + temp_x][look_here_y + temp_y] == 'w':
                     return look_here_x + temp_x, look_here_y + temp_y
 
     def _write_values_to_jumping_moves(self, jumping_moves_lists, color):
@@ -667,7 +705,7 @@ class halma_GUI:
                         # compute final heuristic for each jump in jump set
                         end_x = jump[0]
                         end_y = jump[1]
-                        final_heuristic = jump[2] - heuristic_diff
+                        final_heuristic = heuristic_diff - jump[2]
                         flat_move = (move_base_start_x, move_base_start_y, end_x, end_y, final_heuristic)
                         # add the jump move to the flat_move_list
                         flat_move_list.append(flat_move)
@@ -675,7 +713,7 @@ class halma_GUI:
                     # end position is a normal move, compute final heuristic
                     end_x = end_position[0]
                     end_y = end_position[1]
-                    final_heuristic = end_position[2] - heuristic_diff
+                    final_heuristic = heuristic_diff - end_position[2]
                     flat_move = (move_base_start_x, move_base_start_y, end_x, end_y, final_heuristic)
                     flat_move_list.append(flat_move)
         return flat_move_list
@@ -693,11 +731,40 @@ class halma_GUI:
                 # update the best move
                 best_value = move[4]
                 best_move = move
-        print("Move chosen: " + best_move)
         return best_move
 
+    # function takes the current board, assumes red player turn, and looks one move (one red, one green)
+    # into the future assuming green plays perfectly, and returns the best move for
+    # red based on green's response
     def _minimax(self, pruning):
         # TODO pruning
+        best_red_value = -9999
+        best_red_move = None
         # get a flat move list for current board
-        red_moves = self._make_internal_move_list_for('red', self.internal_board)
-        print("")
+        red_moves = self._flatten_move_list(self._make_internal_move_list_for('red', self.string_board))
+        # create a new internal board for each move
+        for red_move in red_moves:
+            # create a copy of the current board
+            next_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
+            for row in range(self.board_size):
+                for column in range(self.board_size):
+                    next_board[row][column] = self.string_board[row][column]
+            # configure board based on red_move
+            next_board[red_move[1]][red_move[0]] = 'w'
+            next_board[red_move[3]][red_move[2]] = 'r'
+            # get all green moves for next_board
+            green_moves = self._flatten_move_list(self._make_internal_move_list_for('green', next_board))
+            # get green's best move in response to this red_move
+            best_green_move = self._get_max_move(green_moves)
+            # modify this red move value with green's response value
+            single_ply_value = red_move[4] - best_green_move[4]
+            # check if this move is better than current best
+            if single_ply_value > best_red_value:
+                # update best move based on minimax
+                best_red_move = red_move
+                best_red_value = single_ply_value
+        # return the best red move based on response from green
+        return best_red_move
+
+    # function calls minimax repeatedly, each call one step deeper
+    #def _iterative_minimax(self, pruning):
