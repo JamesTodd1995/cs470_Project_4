@@ -9,6 +9,7 @@
 # 4. a pause button
 from tkinter import *
 import math
+import time
 
 class halma_GUI:
     alphabet =["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
@@ -28,8 +29,9 @@ class halma_GUI:
     status_label = None
     red_goal = None
     green_goal = None
+    is_player_1_AI = False
 
-    def __init__(self, board_size):
+    def __init__(self, board_size, add_AI = False):
         if board_size >= 8:
             self.board_size = board_size
         self.halma_board = self._make_TK_GUI()
@@ -48,6 +50,7 @@ class halma_GUI:
         self._set_up_status()
         self.green_goal = (0,0)
         self.red_goal = (self.board_size-1,self.board_size-1)
+        self.is_player_1_AI = add_AI
 
 # These sets of function are used to setup the GUI.
 # What I mean by setup or setup is create all of the base widgets needed to make the GUI.
@@ -106,7 +109,29 @@ class halma_GUI:
                 self.string_board[row][column] = 'r'
                 self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="green")
                 self.string_board[self.board_size - row - 1][self.board_size - column - 1] = 'g'
-        self._set_up_side_pawns()
+        if self.string_board == 8:
+            self._set_up_side_pawns_for_8_board()
+        else:
+            self._set_up_side_pawns()
+
+    def _set_up_side_pawns_for_8_board(self):
+        self.internal_board[0][3].configure(bg="red")
+        self.internal_board[1][3].configure(bg="red")
+        self.internal_board[3][0].configure(bg="red")
+        self.internal_board[3][1].configure(bg="red")
+        self.string_board[0][3] = 'r'
+        self.string_board[1][3] = 'r'
+        self.string_board[3][0] = 'r'
+        self.string_board[3][1] = 'r'
+
+        self.internal_board[self.board_size - 1][self.board_size - 4].configure(bg="green")
+        self.internal_board[self.board_size - 2][self.board_size - 4].configure(bg="green")
+        self.internal_board[self.board_size - 4][self.board_size - 1].configure(bg="green")
+        self.internal_board[self.board_size - 4][self.board_size - 2].configure(bg="green")
+        self.string_board[self.board_size - 1][self.board_size - 4] = 'g'
+        self.string_board[self.board_size - 2][self.board_size - 4] = 'g'
+        self.string_board[self.board_size - 4][self.board_size - 1] = 'g'
+        self.string_board[self.board_size - 4][self.board_size - 2] = 'g'
 
     # I did not know how to make a clean for loop to place all of the pawns, so this gets the rest of them.
     def _set_up_side_pawns(self):
@@ -186,9 +211,12 @@ class halma_GUI:
 
     # function call for the start button. which starts the timer.
     def _start_game(self):
-        self.halma_board.after(1000,self._update_clock())
+        self.halma_board.after(2000,self._update_clock())
         string = "Game Started"
         self.status_label.configure(text=string)
+        if self.is_player_1_AI:
+            time.sleep(2)
+            self.move(0,0)
 
     # red wins when all of its pieces are in the bottom right corner
     # loops through top left 4x4 square ignoring non-goal zones,
@@ -359,8 +387,20 @@ class halma_GUI:
     #           When turn ends, check if either side is a victor
     #       else the player want to jump again.
     def move(self, row_position, column_position):
+        if self.player == 1 and self.is_player_1_AI:
+            self._test_print_internal_board('red')
+            self.player = 3 - self.player
+            if self.player == 1:
+                color = "red"
+            else:
+                color = "green"
+            self.start_move = True
+            string = "Player " + str(self.player) + "'s (" + color + ") turn"
+            self.player_label.configure(text=string)
+            self.has_jumped = False
 
-        if not self.has_jumped:
+
+        elif not self.has_jumped:
             if self.start_move:
                 self._start_move_sequence(row_position, column_position)
             elif row_position == self.pawn_in_play[0] and column_position == self.pawn_in_play[1]:
@@ -380,12 +420,15 @@ class halma_GUI:
             string = "Player " + str(self.player) + "'s (" + color + ") turn"
             self.player_label.configure(text=string)
             self.has_jumped = False
-            #self._clean_highlight()
-            #self._check_red_wins()
-            self._check_green_wins()
         else:
             self._move_pawn(row_position, column_position)
-        self._test_print_internal_board()
+        if self.player == 1:
+
+            self.move(0, 0)
+        self._check_red_wins()
+        self._check_green_wins()
+        time.sleep(0.005)
+
 
     # this function does the logic for the start of someones turn.
     #   if it is player X then
@@ -527,37 +570,38 @@ class halma_GUI:
             self.timer_Label.configure(text="Timer: 180 seconds remaining")
 
 
-    def _test_print_internal_board(self):
-        print("==============================================")
-        print("==============================================")
-        current_board = self.internal_board
-        #self._test_print_moves_list(self._make_internal_move_list_for('red', current_board))
-        print("==============================================")
-        #self._test_print_moves_list(self._flatten_move_list(self._make_internal_move_list_for('red', current_board)))
-        print("==============================================")
-        for column in range(self.board_size):
-            print("| ", end="")
-            for row in range(self.board_size):
-                print(self.string_board[row][column], " | ", end="")
-            print()
-        print("==============================================")
+    def _test_print_internal_board(self, color):
+        # print("==============================================")
+        # print("==============================================")
+        # current_board = self.internal_board
+        # #self._test_print_moves_list(self._make_internal_move_list_for('red', current_board))
+        # print("==============================================")
+        # #self._test_print_moves_list(self._flatten_move_list(self._make_internal_move_list_for('red', current_board)))
+        # print("==============================================")
+        # for column in range(self.board_size):
+        #     print("| ", end="")
+        #     for row in range(self.board_size):
+        #         print(self.string_board[row][column], " | ", end="")
+        #     print()
+        # print("==============================================")
         print("Best move: (x1, y1, x2, y2, h)")
         print(self._minimax(False))
-        print("==============================================")
-        print("==============================================")
-        #self._test_print_moves_list(self._make_internal_move_list_for('green'))
-        print("==============================================")
-        print("==============================================")
-        for column in range(self.board_size):
-            print("| ", end="")
-            for row in range(self.board_size):
-
-                pawn = self.internal_board[row][column].cget('bg')
-                if pawn == 'gray':
-                    print("w", " | ", end="")
-                else:
-                    print(pawn[0], " | ", end="")
-            print()
+        self._AI_move_pawn(self._minimax(False),color)
+        # print("==============================================")
+        # print("==============================================")
+        # #self._test_print_moves_list(self._make_internal_move_list_for('green'))
+        # print("==============================================")
+        # print("==============================================")
+        # for column in range(self.board_size):
+        #     print("| ", end="")
+        #     for row in range(self.board_size):
+        #
+        #         pawn = self.internal_board[row][column].cget('bg')
+        #         if pawn == 'gray':
+        #             print("w", " | ", end="")
+        #         else:
+        #             print(pawn[0], " | ", end="")
+        #     print()
 
     def _test_print_moves_list(self, moves_list):
         for move in moves_list:
@@ -590,7 +634,6 @@ class halma_GUI:
                     else:
                         returning_full_move_list.append([this_pawn] + self._get_valid_moves_from_adjacent_squares(adjacent_squares, color, board))
         return returning_full_move_list
-
 
     def _get_valid_moves_from_adjacent_squares(self, adjacent_squares, color, board):
         returning_move_list = []
@@ -769,3 +812,13 @@ class halma_GUI:
 
     # function calls minimax repeatedly, each call one step deeper
     #def _iterative_minimax(self, pruning):
+
+    def _AI_move_pawn(self, move, color):
+        self.string_board[move[0]][move[1]] = 'w'
+        self.internal_board[move[0]][move[1]].configure(bg='white')
+        if color == 'red':
+            self.internal_board[move[2]][move[3]].configure(bg='red')
+            self.string_board[move[2]][move[3]] = 'r'
+        else:
+            self.internal_board[move[2]][move[3]].configure(bg='green')
+            self.string_board[move[2]][move[3]] = 'g'
