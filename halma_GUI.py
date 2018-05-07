@@ -541,6 +541,7 @@ class halma_GUI:
                 print(self.string_board[row][column], " | ", end="")
             print()
         print("==============================================")
+        print("Best move: (x1, y1, x2, y2, h)")
         print(self._minimax(False))
         print("==============================================")
         print("==============================================")
