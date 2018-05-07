@@ -25,6 +25,8 @@ class halma_GUI:
     board_size = 8
     player = 1
     status_label = None
+    red_goal = None
+    green_goal = None
 
     def __init__(self, board_size):
         if board_size >= 8:
@@ -43,6 +45,8 @@ class halma_GUI:
         self._set_up_timer()
         self._set_up_start_button()
         self._set_up_status()
+        self.green_goal = (self.board_size-1,self.board_size-1)
+        self.red_goal = (0,0)
 
 # These sets of function are used to setup the GUI.
 # What I mean by setup or setup is create all of the base widgets needed to make the GUI.
@@ -303,8 +307,8 @@ class halma_GUI:
         temp_y = (square[1] - square_in_question[1])
         look_here_x = temp_x + square_in_question[0]
         look_here_y = temp_y + square_in_question[1]
-        if look_here_y + temp_y >= 0 and look_here_x + temp_x >= 0 and look_here_y + temp_y != self.board_size and \
-                                look_here_x + temp_x != self.board_size:
+        if look_here_y + temp_y >= 0 and look_here_x + temp_x >= 0 and look_here_y + temp_y < self.board_size and \
+                                look_here_x + temp_x < self.board_size:
             if self.internal_board[look_here_x][look_here_y].cget('bg') == 'red' or \
                self.internal_board[look_here_x][look_here_y].cget('bg') == 'green':
 
@@ -337,6 +341,7 @@ class halma_GUI:
     #           When turn ends, check if either side is a victor
     #       else the player want to jump again.
     def move(self, row_position, column_position):
+
         if not self.has_jumped:
             if self.start_move:
                 self._start_move_sequence(row_position, column_position)
@@ -345,6 +350,7 @@ class halma_GUI:
             else:
                 self._move_pawn(row_position, column_position)
         elif self.has_jumped and (row_position, column_position) == self.pawn_in_play:
+            self._clean_highlight()
             self.pawn_in_play = None
             self.player = 3 - self.player
             self.start_move = True
@@ -361,6 +367,7 @@ class halma_GUI:
             self._check_green_wins()
         else:
             self._move_pawn(row_position, column_position)
+        self._test_print_internal_board()
 
     # this function does the logic for the start of someones turn.
     #   if it is player X then
@@ -372,6 +379,7 @@ class halma_GUI:
     #       start move = false, or over
 
     def _start_move_sequence(self,row_position, column_position):
+        self._clean_highlight()
         # for testing here, we will change where this stuff is called
         if self.player == 1:
             player_color = 'red'
@@ -380,15 +388,11 @@ class halma_GUI:
         all_pegs = self._get_all_peg_positions(player_color, 0, 0, [])
         all_adj = self._get_all_peg_adjacency(all_pegs, [])
 
-        print(all_pegs)
-        print('row:',row_position)
-        print('col:',column_position)
-        print('all_adj:',all_adj)
         if player_color == 'red':
             dist = self._distance_to_goal([row_position, column_position], [0, 0])
         else:
             dist = self._distance_to_goal([row_position, column_position], [len(self.internal_board) - 1, len(self.internal_board[0]) - 1])
-        print('dist_to_goal:', dist)
+
 
         if self.player == 1 and self.internal_board[row_position][column_position].cget('bg') == 'red':
             self._clean_highlight()
@@ -498,3 +502,143 @@ class halma_GUI:
             self.timer_Label.configure(text="Timer: 180 seconds remaining")
 
     #def _place_pawn(self, row, column):
+
+    def _test_print_internal_board(self):
+        print("==============================================")
+        print("==============================================")
+        self._test_print_moves_list(self._make_internal_move_list_for('red'))
+        print("==============================================")
+        print("==============================================")
+
+        print("==============================================")
+        print("==============================================")
+        #self._test_print_moves_list(self._make_internal_move_list_for('green'))
+        print("==============================================")
+        print("==============================================")
+        for column in range(self.board_size):
+            print("| ", end="")
+            for row in range(self.board_size):
+
+                pawn = self.internal_board[row][column].cget('bg')
+                if pawn == 'gray':
+                    print("w", " | ", end="")
+                else:
+                    print(pawn[0], " | ", end="")
+            print()
+
+    def _test_print_moves_list(self, moves_list):
+        for move in moves_list:
+            print(move)
+
+    def _make_internal_move_list_for(self, color):
+        returning_full_move_list = []
+
+        for column in range(self.board_size):
+
+            for row in range(self.board_size):
+                pawn = self.internal_board[row][column].cget('bg')
+                if pawn == color:
+                    adjacent_squares = self._get_adjacent_squares(row, column)
+                    temp_list = []
+                    if color is 'red':
+
+                        this_pawn = (row, column, self._distance_to_goal((row, column), self.red_goal))
+                        temp_list = self._get_possible_jump_list((row, column), adjacent_squares)
+                        temp_list = self._write_values_to_jumping_moves(temp_list, color)
+                    else:
+                        this_pawn = (row, column, self._distance_to_goal((row, column), self.green_goal))
+                        temp_list = self._get_possible_jump_list((row, column), adjacent_squares)
+                        temp_list = self._write_values_to_jumping_moves(temp_list, color)
+                    if temp_list is not None:
+                        returning_full_move_list.append([this_pawn] + temp_list +self._get_valid_moves_from_adjacent_squares(adjacent_squares, color))
+                    else:
+                        returning_full_move_list.append([this_pawn] + self._get_valid_moves_from_adjacent_squares(adjacent_squares, color))
+        return returning_full_move_list
+
+
+    def _get_valid_moves_from_adjacent_squares(self, adjacent_squares, color):
+        returning_move_list = []
+        for move in adjacent_squares:
+            test_color = self.internal_board[move[0]][move[1]].cget('bg')
+            if test_color == 'white' or test_color == 'gray':
+                if color is 'red':
+
+                    returning_move_list.append((move[0], move[1], self._distance_to_goal(move, self.red_goal)))
+
+                else:
+                    returning_move_list.append((move[0], move[1], self._distance_to_goal(move, self.green_goal)))
+        return returning_move_list
+
+    def _get_possible_jump_list(self, move, adjacent_squares):
+        returning_jump_list = []
+        temp_list = self._get_jumping_moves(adjacent_squares, move)
+        temp_sub_list = []
+        for move_in_temp_list in temp_list:
+
+            sub_move_adjacent_squares = self._look_to_see_if_double_jump(move_in_temp_list, move, temp_list)
+            temp_sub_list = temp_sub_list + [[temp_list[0]] + sub_move_adjacent_squares]
+
+        if [] in temp_sub_list:
+            temp_sub_list = temp_sub_list.remove([])
+
+        if temp_sub_list != [] and temp_sub_list != None:
+            returning_jump_list = returning_jump_list + temp_sub_list
+
+
+        return returning_jump_list
+
+    def _look_to_see_if_double_jump(self, move, old_move, old_moves):
+
+        temp_val = self._get_jumping_moves(self._get_adjacent_squares(move[0],move[1]),move, old_move)
+        if temp_val is not None and temp_val != []:
+            if old_moves is not []:
+                for known_move in old_moves:
+                    if known_move in temp_val:
+                        temp_val.remove(known_move)
+
+            temp_list = temp_val
+            old_moves = old_moves + temp_list
+            if temp_val == []:
+                return []
+            else:
+                return temp_list + self._look_to_see_if_double_jump(temp_val[0], move, old_moves)
+        else:
+            return []
+
+    def _get_jumping_moves(self, adjacent_squares, from_this_pawn, remove_this_jump = None):
+        returning_list = []
+        for square in adjacent_squares:
+            temp_val = self._see_if_there_is_a_jumpable_move(square, from_this_pawn)
+            if temp_val != None:
+                if remove_this_jump != temp_val:
+                    returning_list.append(temp_val)
+        return returning_list
+
+    def _see_if_there_is_a_jumpable_move(self, square, square_in_question):
+        temp_x = (square[0] - square_in_question[0])
+        temp_y = (square[1] - square_in_question[1])
+        look_here_x = temp_x + square_in_question[0]
+        look_here_y = temp_y + square_in_question[1]
+        if look_here_y + temp_y >= 0 and look_here_x + temp_x >= 0 and look_here_y + temp_y < self.board_size and \
+                                look_here_x + temp_x < self.board_size:
+            if self.internal_board[look_here_x][look_here_y].cget('bg') == 'red' or \
+                            self.internal_board[look_here_x][look_here_y].cget('bg') == 'green':
+
+                if self.internal_board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'gray' or \
+                   self.internal_board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'white':
+                    return look_here_x + temp_x, look_here_y + temp_y
+
+    def _write_values_to_jumping_moves(self, jumping_moves_lists, color):
+        if jumping_moves_lists == []:
+            return []
+        returning_list = []
+        for move_list in jumping_moves_lists:
+            inner_temp_list = []
+            for move in move_list:
+                if color == 'red':
+                    inner_temp_list.append((move[0],move[1], self._distance_to_goal(move, self.red_goal)))
+                else:
+                    inner_temp_list.append((move[0], move[1], self._distance_to_goal(move, self.green_goal)))
+            returning_list.append(inner_temp_list)
+
+        return returning_list
