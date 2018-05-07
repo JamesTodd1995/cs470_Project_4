@@ -109,29 +109,26 @@ class halma_GUI:
                 self.string_board[row][column] = 'r'
                 self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="green")
                 self.string_board[self.board_size - row - 1][self.board_size - column - 1] = 'g'
-        if self.string_board == 8:
-            self._set_up_side_pawns_for_8_board()
+        if self.board_size == 8:
+            self._set_up_side_pawns()
         else:
             self._set_up_side_pawns()
 
     def _set_up_side_pawns_for_8_board(self):
         self.internal_board[0][3].configure(bg="red")
-        self.internal_board[1][3].configure(bg="red")
         self.internal_board[3][0].configure(bg="red")
-        self.internal_board[3][1].configure(bg="red")
+        self.internal_board[2][2].configure(bg="white")
         self.string_board[0][3] = 'r'
-        self.string_board[1][3] = 'r'
         self.string_board[3][0] = 'r'
-        self.string_board[3][1] = 'r'
+        self.string_board[2][2] = 'w'
 
-        self.internal_board[self.board_size - 1][self.board_size - 4].configure(bg="green")
-        self.internal_board[self.board_size - 2][self.board_size - 4].configure(bg="green")
-        self.internal_board[self.board_size - 4][self.board_size - 1].configure(bg="green")
-        self.internal_board[self.board_size - 4][self.board_size - 2].configure(bg="green")
-        self.string_board[self.board_size - 1][self.board_size - 4] = 'g'
-        self.string_board[self.board_size - 2][self.board_size - 4] = 'g'
-        self.string_board[self.board_size - 4][self.board_size - 1] = 'g'
-        self.string_board[self.board_size - 4][self.board_size - 2] = 'g'
+        self.internal_board[4][7].configure(bg="green")
+        self.internal_board[5][5].configure(bg="white")
+        self.internal_board[7][4].configure(bg="green")
+        self.string_board[4][7] = 'g'
+        self.string_board[5][5] = 'g'
+        self.string_board[7][4] = 'g'
+
 
     # I did not know how to make a clean for loop to place all of the pawns, so this gets the rest of them.
     def _set_up_side_pawns(self):
