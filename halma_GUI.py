@@ -100,21 +100,21 @@ class halma_GUI:
     def _set_up_pawns(self):
         for row in range(3):
             for column in range(3):
-                self.internal_board[row][column].configure(bg="green")
-                self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="red")
+                self.internal_board[row][column].configure(bg="red")
+                self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="green")
         self._set_up_side_pawns()
 
     # I did not know how to make a clean for loop to place all of the pawns, so this gets the rest of them.
     def _set_up_side_pawns(self):
-        self.internal_board[0][3].configure(bg="green")
-        self.internal_board[1][3].configure(bg="green")
-        self.internal_board[3][0].configure(bg="green")
-        self.internal_board[3][1].configure(bg="green")
+        self.internal_board[0][3].configure(bg="red")
+        self.internal_board[1][3].configure(bg="red")
+        self.internal_board[3][0].configure(bg="red")
+        self.internal_board[3][1].configure(bg="red")
 
-        self.internal_board[self.board_size - 1][self.board_size - 4].configure(bg="red")
-        self.internal_board[self.board_size - 2][self.board_size - 4].configure(bg="red")
-        self.internal_board[self.board_size - 4][self.board_size - 1].configure(bg="red")
-        self.internal_board[self.board_size - 4][self.board_size - 2].configure(bg="red")
+        self.internal_board[self.board_size - 1][self.board_size - 4].configure(bg="green")
+        self.internal_board[self.board_size - 2][self.board_size - 4].configure(bg="green")
+        self.internal_board[self.board_size - 4][self.board_size - 1].configure(bg="green")
+        self.internal_board[self.board_size - 4][self.board_size - 2].configure(bg="green")
 
 
         #image = PhotoImage(file="blank.gif").subsample(2,2)
@@ -501,7 +501,6 @@ class halma_GUI:
             self.has_jumped = False
             self.timer_Label.configure(text="Timer: 180 seconds remaining")
 
-    #def _place_pawn(self, row, column):
 
     def _test_print_internal_board(self):
         print("==============================================")
@@ -642,3 +641,5 @@ class halma_GUI:
             returning_list.append(inner_temp_list)
 
         return returning_list
+
+    def _flatten_move_list(self, moves)
