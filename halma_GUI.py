@@ -505,9 +505,10 @@ class halma_GUI:
     def _test_print_internal_board(self):
         print("==============================================")
         print("==============================================")
-        self._test_print_moves_list(self._make_internal_move_list_for('red'))
+        current_board = self.internal_board
+        self._test_print_moves_list(self._make_internal_move_list_for('red', current_board))
         print("==============================================")
-        self._test_print_moves_list(self._flatten_move_list(self._make_internal_move_list_for('red')))
+        self._test_print_moves_list(self._flatten_move_list(self._make_internal_move_list_for('red', current_board)))
         print("==============================================")
 
         print("==============================================")
@@ -530,36 +531,36 @@ class halma_GUI:
         for move in moves_list:
             print(move)
 
-    def _make_internal_move_list_for(self, color):
+    def _make_internal_move_list_for(self, color, board):
         returning_full_move_list = []
 
         for column in range(self.board_size):
 
             for row in range(self.board_size):
-                pawn = self.internal_board[row][column].cget('bg')
+                pawn = board[row][column].cget('bg')
                 if pawn == color:
                     adjacent_squares = self._get_adjacent_squares(row, column)
                     temp_list = []
                     if color is 'red':
 
                         this_pawn = (row, column, self._distance_to_goal((row, column), self.red_goal))
-                        temp_list = self._get_possible_jump_list((row, column), adjacent_squares)
+                        temp_list = self._get_possible_jump_list((row, column), adjacent_squares, board)
                         temp_list = self._write_values_to_jumping_moves(temp_list, color)
                     else:
                         this_pawn = (row, column, self._distance_to_goal((row, column), self.green_goal))
-                        temp_list = self._get_possible_jump_list((row, column), adjacent_squares)
+                        temp_list = self._get_possible_jump_list((row, column), adjacent_squares, board)
                         temp_list = self._write_values_to_jumping_moves(temp_list, color)
                     if temp_list is not None:
-                        returning_full_move_list.append([this_pawn] + temp_list +self._get_valid_moves_from_adjacent_squares(adjacent_squares, color))
+                        returning_full_move_list.append([this_pawn] + temp_list +self._get_valid_moves_from_adjacent_squares(adjacent_squares, color, board))
                     else:
-                        returning_full_move_list.append([this_pawn] + self._get_valid_moves_from_adjacent_squares(adjacent_squares, color))
+                        returning_full_move_list.append([this_pawn] + self._get_valid_moves_from_adjacent_squares(adjacent_squares, color, board))
         return returning_full_move_list
 
 
-    def _get_valid_moves_from_adjacent_squares(self, adjacent_squares, color):
+    def _get_valid_moves_from_adjacent_squares(self, adjacent_squares, color, board):
         returning_move_list = []
         for move in adjacent_squares:
-            test_color = self.internal_board[move[0]][move[1]].cget('bg')
+            test_color = board[move[0]][move[1]].cget('bg')
             if test_color == 'white' or test_color == 'gray':
                 if color is 'red':
 
@@ -569,13 +570,13 @@ class halma_GUI:
                     returning_move_list.append((move[0], move[1], self._distance_to_goal(move, self.green_goal)))
         return returning_move_list
 
-    def _get_possible_jump_list(self, move, adjacent_squares):
+    def _get_possible_jump_list(self, move, adjacent_squares, board):
         returning_jump_list = []
-        temp_list = self._get_jumping_moves(adjacent_squares, move)
+        temp_list = self._get_jumping_moves(adjacent_squares, move, board)
         temp_sub_list = []
         for move_in_temp_list in temp_list:
 
-            sub_move_adjacent_squares = self._look_to_see_if_double_jump(move_in_temp_list, move, temp_list)
+            sub_move_adjacent_squares = self._look_to_see_if_double_jump(move_in_temp_list, move, temp_list, board)
             temp_sub_list = temp_sub_list + [[temp_list[0]] + sub_move_adjacent_squares]
 
         if [] in temp_sub_list:
@@ -587,9 +588,9 @@ class halma_GUI:
 
         return returning_jump_list
 
-    def _look_to_see_if_double_jump(self, move, old_move, old_moves):
+    def _look_to_see_if_double_jump(self, move, old_move, old_moves, board):
 
-        temp_val = self._get_jumping_moves(self._get_adjacent_squares(move[0],move[1]),move, old_move)
+        temp_val = self._get_jumping_moves(self._get_adjacent_squares(move[0],move[1]),move, board, old_move)
         if temp_val is not None and temp_val != []:
             if old_moves is not []:
                 for known_move in old_moves:
@@ -601,31 +602,31 @@ class halma_GUI:
             if temp_val == []:
                 return []
             else:
-                return temp_list + self._look_to_see_if_double_jump(temp_val[0], move, old_moves)
+                return temp_list + self._look_to_see_if_double_jump(temp_val[0], move, old_moves, board)
         else:
             return []
 
-    def _get_jumping_moves(self, adjacent_squares, from_this_pawn, remove_this_jump = None):
+    def _get_jumping_moves(self, adjacent_squares, from_this_pawn, board, remove_this_jump = None):
         returning_list = []
         for square in adjacent_squares:
-            temp_val = self._see_if_there_is_a_jumpable_move(square, from_this_pawn)
+            temp_val = self._see_if_there_is_a_jumpable_move(square, from_this_pawn, board)
             if temp_val != None:
                 if remove_this_jump != temp_val:
                     returning_list.append(temp_val)
         return returning_list
 
-    def _see_if_there_is_a_jumpable_move(self, square, square_in_question):
+    def _see_if_there_is_a_jumpable_move(self, square, square_in_question, board):
         temp_x = (square[0] - square_in_question[0])
         temp_y = (square[1] - square_in_question[1])
         look_here_x = temp_x + square_in_question[0]
         look_here_y = temp_y + square_in_question[1]
         if look_here_y + temp_y >= 0 and look_here_x + temp_x >= 0 and look_here_y + temp_y < self.board_size and \
                                 look_here_x + temp_x < self.board_size:
-            if self.internal_board[look_here_x][look_here_y].cget('bg') == 'red' or \
-                            self.internal_board[look_here_x][look_here_y].cget('bg') == 'green':
+            if board[look_here_x][look_here_y].cget('bg') == 'red' or \
+                            board[look_here_x][look_here_y].cget('bg') == 'green':
 
-                if self.internal_board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'gray' or \
-                   self.internal_board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'white':
+                if board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'gray' or \
+                   board[look_here_x + temp_x][look_here_y + temp_y].cget('bg') == 'white':
                     return look_here_x + temp_x, look_here_y + temp_y
 
     def _write_values_to_jumping_moves(self, jumping_moves_lists, color):
@@ -695,6 +696,8 @@ class halma_GUI:
         print("Move chosen: " + best_move)
         return best_move
 
-    def _minimax(self, board, pruning):
+    def _minimax(self, pruning):
         # TODO pruning
+        # get a flat move list for current board
+        red_moves = self._make_internal_move_list_for('red', self.internal_board)
         print("")
