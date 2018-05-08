@@ -26,7 +26,7 @@ class halma_GUI:
     old_move = None
     app_GUI = None
     board_size = 8
-    player = 1
+    player = 2
     status_label = None
     red_goal = None
     green_goal = None
@@ -35,8 +35,10 @@ class halma_GUI:
     minimax_time = 0.0
     minimax_depth = 1
     minimax_boards_explored = 1
+    is_player_2_AI_aka_green = False
+    list_of_green_gold_nodes = None
 
-    def __init__(self, board_size, add_AI = False):
+    def __init__(self, board_size, add_AI_p1 = False, add_AI_p2 = False):
         if board_size >= 8:
             self.board_size = board_size
         self.halma_board = self._make_TK_GUI()
@@ -55,8 +57,10 @@ class halma_GUI:
         self._set_up_status()
         self.green_goal = (0,0)
         self.red_goal = (self.board_size-1,self.board_size-1)
-        self.is_player_1_AI = add_AI
+        self.is_player_1_AI = add_AI_p1
         self.list_of_red_gold_nodes = self._make_reds_list_goal_nodes_list()
+        self.is_player_2_AI_aka_green = add_AI_p2
+        self.list_of_green_gold_nodes = self._make_greens_list_goal_nodes_list()
 
 # These sets of function are used to setup the GUI.
 # What I mean by setup or setup is create all of the base widgets needed to make the GUI.
@@ -145,6 +149,15 @@ class halma_GUI:
         returning_list.remove(self.red_goal)
         return returning_list
 
+    def _make_greens_list_goal_nodes_list(self):
+        returning_list = []
+        for row in range(self.board_size):
+            for column in range(self.board_size):
+                test_color = self.internal_board[row][column].cget('bg')
+                if test_color == 'red':
+                    returning_list.append((row,column))
+        returning_list.remove(self.green_goal)
+        return returning_list
 
     # I did not know how to make a clean for loop to place all of the pawns, so this gets the rest of them.
     def _set_up_side_pawns(self):
@@ -187,7 +200,7 @@ class halma_GUI:
 
     # this setup the player label in the top left so we can see whos turn it is. also it is saved as self.player_label
     def _set_up_player_label(self):
-        label = Label(self.halma_board, text="Player 1's (red) turn")
+        label = Label(self.halma_board, text="Player 1's (green) turn")
         label.grid(row=0,column=0)
         label.configure(bg='white')
         self.player_label = label
@@ -228,6 +241,9 @@ class halma_GUI:
         string = "Game Started"
         self.status_label.configure(text=string)
         if self.is_player_1_AI:
+            time.sleep(2)
+            self.move(0,0)
+        if self.is_player_2_AI_aka_green:
             time.sleep(2)
             self.move(0,0)
 
@@ -468,6 +484,7 @@ class halma_GUI:
     #           When turn ends, check if either side is a victor
     #       else the player want to jump again.
     def move(self, row_position, column_position):
+        self.halma_board.update()
         if self.player == 1 and self.is_player_1_AI:
             self._test_print_internal_board('red')
             self.player = 3 - self.player
@@ -476,10 +493,24 @@ class halma_GUI:
             else:
                 color = "green"
             self.start_move = True
-            string = "Player " + str(self.player) + "'s (" + color + ") turn"
+            string = "Player's (" + color + ") turn"
             self.player_label.configure(text=string)
             self.has_jumped = False
-
+            if self.is_player_2_AI_aka_green:
+                self.move(0,0)
+        elif self.player == 2 and self.is_player_2_AI_aka_green:
+            self._test_print_internal_board('green')
+            self.player = 3 - self.player
+            if self.player == 1:
+                color = "red"
+            else:
+                color = "green"
+            self.start_move = True
+            string = "Player's (" + color + ") turn"
+            self.player_label.configure(text=string)
+            self.has_jumped = False
+            if self.is_player_1_AI:
+                self.move(0,0)
 
         elif not self.has_jumped:
             if self.start_move:
@@ -498,22 +529,29 @@ class halma_GUI:
             else:
                 color = "green"
             self.start_move = True
-            string = "Player " + str(self.player) + "'s (" + color + ") turn"
+            string = "Player's (" + color + ") turn"
             self.player_label.configure(text=string)
             self.has_jumped = False
             self._clean_highlight()
+            if self.is_player_2_AI_aka_green:
+                self.move(0,0)
+            if self.is_player_1_AI:
+                self.move(0,0)
         else:
             self._move_pawn(row_position, column_position)
-        if self.player == 1:
 
-            self.move(0, 0)
         self._check_green_wins()
+        self._check_red_wins()
         time.sleep(0.005)
         if len(self.list_of_red_gold_nodes) == 0 and self.red_goal == None:
             self.player = 4000
-            string = "Player 1 (red) wins."
+            string = "Player (red) wins."
             self.status_label.configure(text=string)
-
+        if len(self.list_of_green_gold_nodes) == 0 and self.green_goal == None:
+            self.player = 4000
+            string = "Player (green) wins."
+            self.status_label.configure(text=string)
+        self.halma_board.update()
 
     # this function does the logic for the start of someones turn.
     #   if it is player X then
@@ -627,11 +665,15 @@ class halma_GUI:
                 else:
                     color = "green"
                 self.start_move = True
-                string = "Player " + str(self.player) + "'s (" + color + ") turn"
+                string = "Player's (" + color + ") turn"
                 self._clean_highlight()
                 self.player_label.configure(text=string)
                 self.has_jumped = False
                 self.timer_Label.configure(text="Timer: 60 seconds remaining")
+                if self.is_player_2_AI_aka_green:
+                    self.move(0, 0)
+                if self.is_player_1_AI:
+                    self.move(0, 0)
             else:
                 self.start_move = True
                 self.has_jumped = True
@@ -645,47 +687,29 @@ class halma_GUI:
                 color = "red"
             else:
                 color = "green"
-            string = "Player " + str(self.player) + "'s (" + color + ") turn"
+            string = "Player's (" + color + ") turn"
             self.player_label.configure(text=string)
             self.has_jumped = False
             self.timer_Label.configure(text="Timer: 60 seconds remaining")
             self._clean_highlight()
+            if self.is_player_2_AI_aka_green:
+                self.move(0,0)
+            if self.is_player_1_AI:
+                self.move(0,0)
 
-
+# self._display_minimax_stats()
     def _test_print_internal_board(self, color):
-        # print("==============================================")
-        # print("==============================================")
-        # current_board = self.internal_board
-        # #self._test_print_moves_list(self._make_internal_move_list_for('red', current_board))
-        # print("==============================================")
-        # #self._test_print_moves_list(self._flatten_move_list(self._make_internal_move_list_for('red', current_board)))
-        # print("==============================================")
-        # for column in range(self.board_size):
-        #     print("| ", end="")
-        #     for row in range(self.board_size):
-        #         print(self.string_board[row][column], " | ", end="")
-        #     print()
-        # print("==============================================")
-        print("Best move: (x1, y1, x2, y2, h)")
-        test_move = self._iterative_minimax(False)
-        print(test_move)
-        self._AI_move_pawn(test_move,color)
-        self._display_minimax_stats()
-        # print("==============================================")
-        # print("==============================================")
-        # #self._test_print_moves_list(self._make_internal_move_list_for('green'))
-        # print("==============================================")
-        # print("==============================================")
-        # for column in range(self.board_size):
-        #     print("| ", end="")
-        #     for row in range(self.board_size):
-        #
-        #         pawn = self.internal_board[row][column].cget('bg')
-        #         if pawn == 'gray':
-        #             print("w", " | ", end="")
-        #         else:
-        #             print(pawn[0], " | ", end="")
-        #     print()
+
+        if color == 'red':
+            print("Best move for RED: (x1, y1, x2, y2, h)")
+            test_move = self._iterative_minimax(False)
+            print(test_move)
+            self._AI_move_pawn(test_move,color)
+        else:
+            print("Best move for GREEN: (x1, y1, x2, y2, h)")
+            test_move = self._iterative_minimax_for_green(False)
+            print(test_move)
+            self._AI_move_pawn(test_move,color)
 
     def _test_print_moves_list(self, moves_list):
         for move in moves_list:
@@ -924,13 +948,72 @@ class halma_GUI:
             # loop another two moves into the future for a total of three ply
         return current_best
 
+#=======================================================================================================================
+
+
+
+    def _minimax_for_green(self, board, pruning):
+        # TODO pruning
+        best_red_value = -9999
+        best_red_move = None
+        # get a flat move list for current board
+        red_moves = self._flatten_move_list(self._make_internal_move_list_for('green', board))
+        # create a new internal board for each move
+        for red_move in red_moves:
+            # create a copy of the current board
+            next_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
+            for row in range(self.board_size):
+                for column in range(self.board_size):
+                    next_board[row][column] = board[row][column]
+            # configure board based on red_move
+            next_board[red_move[1]][red_move[0]] = 'w'
+            next_board[red_move[3]][red_move[2]] = 'g'
+            # get all green moves for next_board
+            green_moves = self._flatten_move_list(self._make_internal_move_list_for('red', next_board))
+            # get green's best move in response to this red_move
+            best_green_move = self._get_max_move(green_moves)
+            # modify this red move value with green's response value
+            single_ply_value = red_move[4] - best_green_move[4]
+            # check if this move is better than current best
+            if single_ply_value > best_red_value:
+                # update best move based on minimax
+                best_red_move = red_move
+                best_red_value = single_ply_value
+        # return the best red move based on response from green
+        return best_red_move
+
+    # function calls minimax repeatedly, each call one step deeper
+    def _iterative_minimax_for_green(self, pruning):
+        # create a copy of the current board
+        next_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
+        for row in range(self.board_size):
+            for column in range(self.board_size):
+                next_board[row][column] = self.string_board[row][column]
+        for level in range(1):
+            # pass the board copy to the minimax function
+            current_best = self._minimax_for_green(next_board, False)
+            # apply this move to the board copy
+            next_board[current_best[0]][current_best[1]] = 'w'
+            next_board[current_best[2]][current_best[3]] = 'g'
+            # loop another two moves into the future for a total of three ply
+        return current_best
+#=======================================================================================================================
+
+
+
+
+
+
+
+
     def _AI_move_pawn(self, move, color):
         time.sleep(0.05)
         self.string_board[move[0]][move[1]] = 'w'
         self.internal_board[move[0]][move[1]].configure(bg='white')
         time.sleep(0.05)
-        print(move)
         if color == 'red':
+            self.string_board[move[0]][move[1]] = 'w'
+            self.internal_board[move[0]][move[1]].configure(bg='white')
             self.internal_board[move[2]][move[3]].configure(bg='red')
             self.string_board[move[2]][move[3]] = 'r'
             if (move[2],move[3]) == self.red_goal:
@@ -951,6 +1034,29 @@ class halma_GUI:
         else:
             self.internal_board[move[2]][move[3]].configure(bg='green')
             self.string_board[move[2]][move[3]] = 'g'
+        if color == 'green':
+            self.string_board[move[0]][move[1]] = 'w'
+            self.internal_board[move[0]][move[1]].configure(bg='white')
+            self.internal_board[move[2]][move[3]].configure(bg='green')
+            self.string_board[move[2]][move[3]] = 'g'
+            if (move[2],move[3]) == self.red_goal:
+                self.string_board[move[2]][move[3]] = 'g'
+                random_picker = random.SystemRandom()
+                if len(self.list_of_green_gold_nodes) != 0:
+                    temp_goal = random_picker.choice(self.list_of_green_gold_nodes)
+                    while self._look_to_see_if_a_pawn_is_at_goal(temp_goal,'green'):
+                        self.string_board[temp_goal[0]][temp_goal[1]] = 'f'
+                        self.list_of_green_gold_nodes.remove(temp_goal)
+
+                        temp_goal = random_picker.choice(self.list_of_green_gold_nodes)
+                    self.red_goal = temp_goal
+                    self.list_of_green_gold_nodes.remove(self.red_goal)
+                    self.string_board[move[2]][move[3]] = 'f'
+                else:
+                    self.green_goal = None
+        else:
+            self.internal_board[move[2]][move[3]].configure(bg='red')
+            self.string_board[move[2]][move[3]] = 'r'
     def _look_to_see_if_a_pawn_is_at_goal(self,temp_goal,color):
         if color == 'red':
             temp_color = self.internal_board[temp_goal[0]][temp_goal[1]].cget('bg')
