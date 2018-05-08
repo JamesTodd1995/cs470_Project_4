@@ -955,6 +955,7 @@ class halma_GUI:
 
     def _minimax_for_green(self, board, pruning):
         t0 = time.time()
+        boards = 0
         # TODO pruning
         best_red_value = -9999
         best_red_move = None
