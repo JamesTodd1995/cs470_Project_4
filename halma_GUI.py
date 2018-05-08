@@ -650,8 +650,9 @@ class halma_GUI:
         #     print()
         # print("==============================================")
         print("Best move: (x1, y1, x2, y2, h)")
-        print(self._minimax(False))
-        self._AI_move_pawn(self._minimax(False),color)
+        test_move = self._iterative_minimax(False)
+        print(test_move)
+        self._AI_move_pawn(test_move,color)
         # print("==============================================")
         # print("==============================================")
         # #self._test_print_moves_list(self._make_internal_move_list_for('green'))
@@ -845,19 +846,19 @@ class halma_GUI:
     # function takes the current board, assumes red player turn, and looks one move (one red, one green)
     # into the future assuming green plays perfectly, and returns the best move for
     # red based on green's response
-    def _minimax(self, pruning):
+    def _minimax(self, board, pruning):
         # TODO pruning
         best_red_value = -9999
         best_red_move = None
         # get a flat move list for current board
-        red_moves = self._flatten_move_list(self._make_internal_move_list_for('red', self.string_board))
+        red_moves = self._flatten_move_list(self._make_internal_move_list_for('red', board))
         # create a new internal board for each move
         for red_move in red_moves:
             # create a copy of the current board
             next_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
             for row in range(self.board_size):
                 for column in range(self.board_size):
-                    next_board[row][column] = self.string_board[row][column]
+                    next_board[row][column] = board[row][column]
             # configure board based on red_move
             next_board[red_move[1]][red_move[0]] = 'w'
             next_board[red_move[3]][red_move[2]] = 'r'
@@ -876,7 +877,20 @@ class halma_GUI:
         return best_red_move
 
     # function calls minimax repeatedly, each call one step deeper
-    #def _iterative_minimax(self, pruning):
+    def _iterative_minimax(self, pruning):
+        # create a copy of the current board
+        next_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
+        for row in range(self.board_size):
+            for column in range(self.board_size):
+                next_board[row][column] = self.string_board[row][column]
+        for level in range(3):
+            # pass the board copy to the minimax function
+            current_best = self._minimax(next_board, False)
+            # apply this move to the board copy
+            next_board[current_best[1]][current_best[0]] = 'w'
+            next_board[current_best[3]][current_best[2]] = 'r'
+            # loop another two moves into the future for a total of three ply
+        return current_best
 
     def _AI_move_pawn(self, move, color):
         self.string_board[move[0]][move[1]] = 'w'
