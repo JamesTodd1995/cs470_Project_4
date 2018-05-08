@@ -697,7 +697,6 @@ class halma_GUI:
             if self.is_player_1_AI:
                 self.move(0,0)
 
-# self._display_minimax_stats()
     def _test_print_internal_board(self, color):
 
         if color == 'red':
@@ -705,11 +704,13 @@ class halma_GUI:
             test_move = self._iterative_minimax(False)
             print(test_move)
             self._AI_move_pawn(test_move,color)
+            self._display_minimax_stats()
         else:
             print("Best move for GREEN: (x1, y1, x2, y2, h)")
             test_move = self._iterative_minimax_for_green(False)
             print(test_move)
             self._AI_move_pawn(test_move,color)
+            self._display_minimax_stats()
 
     def _test_print_moves_list(self, moves_list):
         for move in moves_list:
@@ -953,6 +954,7 @@ class halma_GUI:
 
 
     def _minimax_for_green(self, board, pruning):
+        t0 = time.time()
         # TODO pruning
         best_red_value = -9999
         best_red_move = None
@@ -960,6 +962,7 @@ class halma_GUI:
         red_moves = self._flatten_move_list(self._make_internal_move_list_for('green', board))
         # create a new internal board for each move
         for red_move in red_moves:
+            boards = boards + 1
             # create a copy of the current board
             next_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
             for row in range(self.board_size):
@@ -980,6 +983,11 @@ class halma_GUI:
                 best_red_move = red_move
                 best_red_value = single_ply_value
         # return the best red move based on response from green
+        t1 = time.time()
+
+        self.minimax_time = t1 - t0
+        self.minimax_depth = 1 # temp value
+        self.minimax_boards_explored = boards
         return best_red_move
 
     # function calls minimax repeatedly, each call one step deeper

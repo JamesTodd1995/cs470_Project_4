@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b1c19673-972c-4156-9af9-89622a753092" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/halma_GUI.py" afterPath="$PROJECT_DIR$/halma_GUI.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/halma_main.py" afterPath="$PROJECT_DIR$/halma_main.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -18,11 +17,11 @@
       <file leaf-file-name="halma_GUI.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/halma_GUI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="377">
-              <caret line="38" column="35" lean-forward="false" selection-start-line="38" selection-start-column="35" selection-end-line="38" selection-end-column="35" />
+            <state relative-caret-position="210">
+              <caret line="698" column="0" lean-forward="true" selection-start-line="698" selection-start-column="0" selection-end-line="698" selection-end-column="0" />
               <folding>
                 <element signature="e#430#451#0" expanded="true" />
-                <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+                <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
               </folding>
             </state>
           </provider>
@@ -59,6 +58,7 @@
       <find>_check_red_wins</find>
       <find>player</find>
       <find>player_label.configure</find>
+      <find>_display_minimax_stats</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -79,6 +79,25 @@
     <option name="y" value="-8" />
     <option name="width" value="1920" />
     <option name="height" value="1004" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>Python</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Python</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -110,6 +129,9 @@
         </subPane>
       </pane>
     </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -256,7 +278,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -275,7 +297,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -312,7 +334,7 @@
           <caret line="505" column="27" lean-forward="false" selection-start-line="505" selection-start-column="27" selection-end-line="505" selection-end-column="27" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -323,7 +345,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -342,7 +364,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -379,7 +401,7 @@
           <caret line="112" column="47" lean-forward="false" selection-start-line="112" selection-start-column="47" selection-end-line="112" selection-end-column="47" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -390,7 +412,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -409,7 +431,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -446,7 +468,7 @@
           <caret line="886" column="49" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="934" selection-end-column="28" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -457,7 +479,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -476,7 +498,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -567,11 +589,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/halma_GUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="377">
-          <caret line="38" column="35" lean-forward="false" selection-start-line="38" selection-start-column="35" selection-end-line="38" selection-end-column="35" />
+        <state relative-caret-position="210">
+          <caret line="698" column="0" lean-forward="true" selection-start-line="698" selection-start-column="0" selection-end-line="698" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766378825" expanded="false" signature="42465:43196" ph="..." />
+            <marker date="1525766712406" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
