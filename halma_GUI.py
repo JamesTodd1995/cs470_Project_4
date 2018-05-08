@@ -10,6 +10,7 @@
 from tkinter import *
 import math
 import time
+import random
 
 class halma_GUI:
     alphabet =["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
@@ -30,6 +31,7 @@ class halma_GUI:
     red_goal = None
     green_goal = None
     is_player_1_AI = False
+    list_of_red_gold_nodes = None
 
     def __init__(self, board_size, add_AI = False):
         if board_size >= 8:
@@ -51,6 +53,7 @@ class halma_GUI:
         self.green_goal = (0,0)
         self.red_goal = (self.board_size-1,self.board_size-1)
         self.is_player_1_AI = add_AI
+        self.list_of_red_gold_nodes = self._make_reds_list_goal_nodes_list()
 
 # These sets of function are used to setup the GUI.
 # What I mean by setup or setup is create all of the base widgets needed to make the GUI.
@@ -110,7 +113,7 @@ class halma_GUI:
                 self.internal_board[self.board_size - row - 1][self.board_size - column - 1].configure(bg="green")
                 self.string_board[self.board_size - row - 1][self.board_size - column - 1] = 'g'
         if self.board_size == 8:
-            self._set_up_side_pawns()
+            self._set_up_side_pawns_for_8_board()
         else:
             self._set_up_side_pawns()
 
@@ -128,6 +131,16 @@ class halma_GUI:
         self.string_board[4][7] = 'g'
         self.string_board[5][5] = 'g'
         self.string_board[7][4] = 'g'
+
+    def _make_reds_list_goal_nodes_list(self):
+        returning_list = []
+        for row in range(self.board_size):
+            for column in range(self.board_size):
+                test_color = self.internal_board[row][column].cget('bg')
+                if test_color == 'green':
+                    returning_list.append((row,column))
+        returning_list.remove(self.red_goal)
+        return returning_list
 
 
     # I did not know how to make a clean for loop to place all of the pawns, so this gets the rest of them.
@@ -230,10 +243,10 @@ class halma_GUI:
         #            print("")
         #        elif self.internal_board[self.board_size - (1 + i)][self.board_size - (1+ j)].cget('bg') != 'red':
         #            return False
-        #string = "Player 1 (red) wins."
-        #self.status_label.configure(text=string)
-        #print("Red wins")
-        #return True
+        # string = "Player 1 (red) wins."
+        # self.status_label.configure(text=string)
+        # print("Red wins")
+        # return True
 
         # temporary for tournement first round
         flag = False
@@ -267,23 +280,24 @@ class halma_GUI:
         if flag:
             string = "Player 1 (red) wins"
             self.status_label.configure(text=string)
+
     # green wins when all of its pieces are in the top left corner
     # loops through top left 4x4 square ignoring non-goal zones,
     # checks that each one is colored green
     # if both loops terminate without the method returning,
     # green is in a win state
     def _check_green_wins(self):
-        #for i in range(0,3):
+        # for i in range(0,3):
         #    for j in range(0,3):
         #        if (i + j) == 5 or (i + j) == 6:
         #            # skip
         #            print("")
         #        elif self.internal_board[i][j].cget('bg') != 'green':
         #            return False
-        #string = "Player 2 (green) wins."
-        #self.status_label.configure(text=string)
-        #print("Green wins")
-        #return True
+        # string = "Player 2 (green) wins."
+        # self.status_label.configure(text=string)
+        # print("Green wins")
+        # return True
 
         # temporary for tournement first round
         flag = False
@@ -343,7 +357,6 @@ class halma_GUI:
 
     # calculates simple straight line distance from a peg to the other corner of the board
     def _distance_to_goal(self, curr_location, goal_location):
-        distance_to_goal = 0
         distance_to_goal = math.sqrt(((curr_location[1] - goal_location[1]) ** 2) + ((curr_location[0] - goal_location[0]) ** 2)) # calc. straight line distance
         return distance_to_goal
 
@@ -485,14 +498,18 @@ class halma_GUI:
             string = "Player " + str(self.player) + "'s (" + color + ") turn"
             self.player_label.configure(text=string)
             self.has_jumped = False
+            self._clean_highlight()
         else:
             self._move_pawn(row_position, column_position)
         if self.player == 1:
 
             self.move(0, 0)
-        self._check_red_wins()
         self._check_green_wins()
         time.sleep(0.005)
+        if len(self.list_of_red_gold_nodes) == 0 and self.red_goal == None:
+            self.player = 4000
+            string = "Player 1 (red) wins."
+            self.status_label.configure(text=string)
 
 
     # this function does the logic for the start of someones turn.
@@ -608,12 +625,10 @@ class halma_GUI:
                     color = "green"
                 self.start_move = True
                 string = "Player " + str(self.player) + "'s (" + color + ") turn"
-                self._clean_highlight()
-                self._check_red_wins()
-                self._check_green_wins()
                 self.player_label.configure(text=string)
                 self.has_jumped = False
                 self.timer_Label.configure(text="Timer: 180 seconds remaining")
+                self._clean_highlight()
             else:
                 self.start_move = True
                 self.has_jumped = True
@@ -633,6 +648,7 @@ class halma_GUI:
             self.player_label.configure(text=string)
             self.has_jumped = False
             self.timer_Label.configure(text="Timer: 180 seconds remaining")
+            self._clean_highlight()
 
 
     def _test_print_internal_board(self, color):
@@ -884,6 +900,36 @@ class halma_GUI:
         if color == 'red':
             self.internal_board[move[2]][move[3]].configure(bg='red')
             self.string_board[move[2]][move[3]] = 'r'
+            if (move[2],move[3]) == self.red_goal:
+                self.string_board[move[2]][move[3]] = 'r'
+                random_picker = random.SystemRandom()
+
+
+
+                if len(self.list_of_red_gold_nodes) != 0:
+                    temp_goal = random_picker.choice(self.list_of_red_gold_nodes)
+                    while self._look_to_see_if_a_pawn_is_at_goal(temp_goal,'red'):
+                        self.string_board[temp_goal[0]][temp_goal[1]] = 'f'
+                        self.list_of_red_gold_nodes.remove(temp_goal)
+
+                        temp_goal = random_picker.choice(self.list_of_red_gold_nodes)
+                    self.red_goal = temp_goal
+                    self.list_of_red_gold_nodes.remove(self.red_goal)
+                    self.string_board[move[2]][move[3]] = 'f'
+                else:
+                    self.red_goal = None
+
+
+
+
         else:
             self.internal_board[move[2]][move[3]].configure(bg='green')
             self.string_board[move[2]][move[3]] = 'g'
+    def _look_to_see_if_a_pawn_is_at_goal(self,temp_goal,color):
+        if color == 'red':
+            temp_color = self.internal_board[temp_goal[0]][temp_goal[1]].cget('bg')
+            if temp_color == color:
+                print("there is a red at", temp_goal)
+                return True
+            else:
+                return False
