@@ -32,6 +32,7 @@ class halma_GUI:
     green_goal = None
     is_player_1_AI = False
     list_of_red_gold_nodes = None
+    minimax_time = 0.0
 
     def __init__(self, board_size, add_AI = False):
         if board_size >= 8:
@@ -665,6 +666,7 @@ class halma_GUI:
         # print("==============================================")
         print("Best move: (x1, y1, x2, y2, h)")
         test_move = self._iterative_minimax(False)
+        self._display_minimax_stats()
         print(test_move)
         self._AI_move_pawn(test_move,color)
         # print("==============================================")
@@ -861,6 +863,7 @@ class halma_GUI:
     # into the future assuming green plays perfectly, and returns the best move for
     # red based on green's response
     def _minimax(self, board, pruning):
+        t0 = time.time()
         # TODO pruning
         best_red_value = -9999
         best_red_move = None
@@ -888,7 +891,14 @@ class halma_GUI:
                 best_red_move = red_move
                 best_red_value = single_ply_value
         # return the best red move based on response from green
+        t1 = time.time()
+
+        self.minimax_time = t1 - t0
         return best_red_move
+
+    def _display_minimax_stats(self):
+        print('Minimax Time:', self.minimax_time)
+
 
     # function calls minimax repeatedly, each call one step deeper
     def _iterative_minimax(self, pruning):
