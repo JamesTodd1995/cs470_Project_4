@@ -62,6 +62,7 @@ class halma_GUI:
         self.is_player_2_AI_aka_green = add_AI_p2
         self.list_of_green_gold_nodes = self._make_greens_list_goal_nodes_list()
 
+
 # These sets of function are used to setup the GUI.
 # What I mean by setup or setup is create all of the base widgets needed to make the GUI.
 
@@ -136,7 +137,7 @@ class halma_GUI:
         self.internal_board[5][5].configure(bg="white")
         self.internal_board[7][4].configure(bg="green")
         self.string_board[4][7] = 'g'
-        self.string_board[5][5] = 'g'
+        self.string_board[5][5] = 'w'
         self.string_board[7][4] = 'g'
 
     def _make_reds_list_goal_nodes_list(self):
@@ -485,6 +486,14 @@ class halma_GUI:
     #       else the player want to jump again.
     def move(self, row_position, column_position):
         self.halma_board.update()
+        if len(self.list_of_red_gold_nodes) == 0 and self.red_goal == None:
+            self.player = 4000
+            string = "Player (red) wins."
+            self.status_label.configure(text=string)
+        if len(self.list_of_green_gold_nodes) == 0 and self.green_goal == None:
+            self.player = 4000
+            string = "Player (green) wins."
+            self.status_label.configure(text=string)
         if self.player == 1 and self.is_player_1_AI:
             self._test_print_internal_board('red')
             self.player = 3 - self.player
@@ -1030,47 +1039,50 @@ class halma_GUI:
                 random_picker = random.SystemRandom()
                 if len(self.list_of_red_gold_nodes) != 0:
                     temp_goal = random_picker.choice(self.list_of_red_gold_nodes)
-                    while self._look_to_see_if_a_pawn_is_at_goal(temp_goal,'red'):
+                    while temp_goal != None and self._look_to_see_if_a_pawn_is_at_goal(temp_goal,'red'):
                         self.string_board[temp_goal[0]][temp_goal[1]] = 'f'
                         self.list_of_red_gold_nodes.remove(temp_goal)
-
-                        temp_goal = random_picker.choice(self.list_of_red_gold_nodes)
+                        if len(self.list_of_red_gold_nodes) != 0:
+                            temp_goal = random_picker.choice(self.list_of_red_gold_nodes)
+                        else:
+                            temp_goal = self.red_goal
                     self.red_goal = temp_goal
                     self.list_of_red_gold_nodes.remove(self.red_goal)
                     self.string_board[move[2]][move[3]] = 'f'
                 else:
                     self.red_goal = None
-        else:
-            self.internal_board[move[2]][move[3]].configure(bg='green')
-            self.string_board[move[2]][move[3]] = 'g'
         if color == 'green':
             self.string_board[move[0]][move[1]] = 'w'
             self.internal_board[move[0]][move[1]].configure(bg='white')
             self.internal_board[move[2]][move[3]].configure(bg='green')
             self.string_board[move[2]][move[3]] = 'g'
-            if (move[2],move[3]) == self.red_goal:
+            if (move[2],move[3]) == self.green_goal:
                 self.string_board[move[2]][move[3]] = 'g'
                 random_picker = random.SystemRandom()
                 if len(self.list_of_green_gold_nodes) != 0:
                     temp_goal = random_picker.choice(self.list_of_green_gold_nodes)
-                    while self._look_to_see_if_a_pawn_is_at_goal(temp_goal,'green'):
+                    while temp_goal != None and self._look_to_see_if_a_pawn_is_at_goal(temp_goal,'green'):
                         self.string_board[temp_goal[0]][temp_goal[1]] = 'f'
                         self.list_of_green_gold_nodes.remove(temp_goal)
-
-                        temp_goal = random_picker.choice(self.list_of_green_gold_nodes)
-                    self.red_goal = temp_goal
-                    self.list_of_green_gold_nodes.remove(self.red_goal)
+                        if len(self.list_of_green_gold_nodes) != 0:
+                            temp_goal = random_picker.choice(self.list_of_green_gold_nodes)
+                        else:
+                            temp_goal = self.green_goal
+                    self.green_goal = temp_goal
+                    self.list_of_green_gold_nodes.remove(self.green_goal)
                     self.string_board[move[2]][move[3]] = 'f'
                 else:
                     self.green_goal = None
-        else:
-            self.internal_board[move[2]][move[3]].configure(bg='red')
-            self.string_board[move[2]][move[3]] = 'r'
     def _look_to_see_if_a_pawn_is_at_goal(self,temp_goal,color):
         if color == 'red':
             temp_color = self.internal_board[temp_goal[0]][temp_goal[1]].cget('bg')
             if temp_color == color:
-                print("there is a red at", temp_goal)
+                return True
+            else:
+                return False
+        if color == 'green':
+            temp_color = self.internal_board[temp_goal[0]][temp_goal[1]].cget('bg')
+            if temp_color == color:
                 return True
             else:
                 return False

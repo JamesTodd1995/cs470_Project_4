@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b1c19673-972c-4156-9af9-89622a753092" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/halma_GUI.py" afterPath="$PROJECT_DIR$/halma_GUI.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,11 +17,10 @@
       <file leaf-file-name="halma_GUI.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/halma_GUI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="274">
-              <caret line="957" column="18" lean-forward="false" selection-start-line="957" selection-start-column="18" selection-end-line="957" selection-end-column="18" />
+            <state relative-caret-position="257">
+              <caret line="721" column="12" lean-forward="true" selection-start-line="721" selection-start-column="12" selection-end-line="721" selection-end-column="12" />
               <folding>
                 <element signature="e#430#451#0" expanded="true" />
-                <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
               </folding>
             </state>
           </provider>
@@ -58,6 +58,7 @@
       <find>player</find>
       <find>player_label.configure</find>
       <find>_display_minimax_stats</find>
+      <find>time.s</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -75,7 +76,7 @@
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="1912" />
-    <option name="y" value="-8" />
+    <option name="y" value="-16" />
     <option name="width" value="1920" />
     <option name="height" value="1004" />
   </component>
@@ -277,7 +278,6 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -296,7 +296,6 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -333,7 +332,6 @@
           <caret line="505" column="27" lean-forward="false" selection-start-line="505" selection-start-column="27" selection-end-line="505" selection-end-column="27" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -344,7 +342,6 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -363,7 +360,6 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -400,7 +396,6 @@
           <caret line="112" column="47" lean-forward="false" selection-start-line="112" selection-start-column="47" selection-end-line="112" selection-end-column="47" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -411,7 +406,6 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -430,7 +424,6 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -467,7 +460,6 @@
           <caret line="886" column="49" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="934" selection-end-column="28" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -478,7 +470,6 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
@@ -497,20 +488,12 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pawn-green.jpg" />
     <entry file="file://$PROJECT_DIR$/pawn-green.png" />
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36-32/Lib/tkinter/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="203">
-          <caret line="3494" column="0" lean-forward="false" selection-start-line="3494" selection-start-column="0" selection-end-line="3494" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/halma_button.py" />
     <entry file="file://$USER_HOME$/.PyCharmCE2017.2/system/python_stubs/1195046535/builtins.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -586,13 +569,28 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36-32/Lib/random.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="256" column="0" lean-forward="false" selection-start-line="256" selection-start-column="0" selection-end-line="256" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36-32/Lib/tkinter/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="1698" column="0" lean-forward="false" selection-start-line="1698" selection-start-column="0" selection-end-line="1698" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/halma_GUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="274">
-          <caret line="957" column="18" lean-forward="false" selection-start-line="957" selection-start-column="18" selection-end-line="957" selection-end-column="18" />
+        <state relative-caret-position="257">
+          <caret line="721" column="12" lean-forward="true" selection-start-line="721" selection-start-column="12" selection-end-line="721" selection-end-column="12" />
           <folding>
             <element signature="e#430#451#0" expanded="true" />
-            <marker date="1525766955051" expanded="false" signature="42517:43248" ph="..." />
           </folding>
         </state>
       </provider>
