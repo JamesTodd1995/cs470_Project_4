@@ -897,18 +897,21 @@ class halma_GUI:
         for row in range(self.board_size):
             for column in range(self.board_size):
                 next_board[row][column] = self.string_board[row][column]
-        for level in range(3):
+        for level in range(1):
             # pass the board copy to the minimax function
             current_best = self._minimax(next_board, False)
             # apply this move to the board copy
-            next_board[current_best[1]][current_best[0]] = 'w'
-            next_board[current_best[3]][current_best[2]] = 'r'
+            next_board[current_best[0]][current_best[1]] = 'w'
+            next_board[current_best[2]][current_best[3]] = 'r'
             # loop another two moves into the future for a total of three ply
         return current_best
 
     def _AI_move_pawn(self, move, color):
+        time.sleep(0.05)
         self.string_board[move[0]][move[1]] = 'w'
         self.internal_board[move[0]][move[1]].configure(bg='white')
+        time.sleep(0.05)
+        print(move)
         if color == 'red':
             self.internal_board[move[2]][move[3]].configure(bg='red')
             self.string_board[move[2]][move[3]] = 'r'
