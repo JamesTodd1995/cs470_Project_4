@@ -35,13 +35,10 @@ class halma_GUI:
     minimax_time = 0.0
     minimax_depth = 1
     minimax_boards_explored = 1
-<<<<<<< HEAD
     red_score = 0
     green_score = 0
-=======
     is_player_2_AI_aka_green = False
     list_of_green_gold_nodes = None
->>>>>>> 6fd0c2fa57752631b08140a561b60ff262328ab3
 
     def __init__(self, board_size, add_AI_p1 = False, add_AI_p2 = False):
         if board_size >= 8:
@@ -256,8 +253,8 @@ class halma_GUI:
         red_pegs = self._get_all_peg_positions('red', 0, 0, [])
         green_pegs = self._get_all_peg_positions('green', 0, 0, [])
         for i in range(0, len(red_pegs)):
-            self.red_score = self.red_score + 1 / self._distance_to_goal(red_pegs[i], [self.board_size - 1, self.board_size - 1])
-            self.green_score = self.green_score + 1 / self._distance_to_goal(green_pegs[i],[0, 0])
+            self.red_score = self.red_score + 1 / (self._distance_to_goal(red_pegs[i], [self.board_size - 1, self.board_size - 1]) + 1)
+            self.green_score = self.green_score + 1 / (self._distance_to_goal(green_pegs[i],[0, 0]) + 1)
         self.red_score = self.red_score + 5
         self.green_score  = self.green_score + 5
         scores = 'Red Score: '+ str(self.red_score) + '\nGreen Score: '+ str(self.green_score)
@@ -724,7 +721,6 @@ class halma_GUI:
                 self.move(0,0)
 
     def _test_print_internal_board(self, color):
-<<<<<<< HEAD
         # print("==============================================")
         # print("==============================================")
         # current_board = self.internal_board
@@ -759,7 +755,6 @@ class halma_GUI:
         #         else:
         #             print(pawn[0], " | ", end="")
         #     print()
-=======
 
         if color == 'red':
             print("Best move for RED: (x1, y1, x2, y2, h)")
@@ -773,7 +768,6 @@ class halma_GUI:
             print(test_move)
             self._AI_move_pawn(test_move,color)
             self._display_minimax_stats()
->>>>>>> 6fd0c2fa57752631b08140a561b60ff262328ab3
 
     def _test_print_moves_list(self, moves_list):
         for move in moves_list:
@@ -1107,9 +1101,7 @@ class halma_GUI:
         else:
             self.internal_board[move[2]][move[3]].configure(bg='green')
             self.string_board[move[2]][move[3]] = 'g'
-<<<<<<< HEAD
 
-=======
         if color == 'green':
             self.string_board[move[0]][move[1]] = 'w'
             self.internal_board[move[0]][move[1]].configure(bg='white')
@@ -1133,7 +1125,6 @@ class halma_GUI:
         else:
             self.internal_board[move[2]][move[3]].configure(bg='red')
             self.string_board[move[2]][move[3]] = 'r'
->>>>>>> 6fd0c2fa57752631b08140a561b60ff262328ab3
     def _look_to_see_if_a_pawn_is_at_goal(self,temp_goal,color):
         if color == 'red':
             temp_color = self.internal_board[temp_goal[0]][temp_goal[1]].cget('bg')
