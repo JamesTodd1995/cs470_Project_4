@@ -12,6 +12,7 @@ import math
 import time
 import random
 
+
 class halma_GUI:
     alphabet =["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     internal_board = None
@@ -37,6 +38,9 @@ class halma_GUI:
     minimax_boards_explored = 1
     is_player_2_AI_aka_green = False
     list_of_green_gold_nodes = None
+    ab_board = 0
+    ab_depth = 0
+    ab_time = 0
 
     def __init__(self, board_size, add_AI_p1 = False, add_AI_p2 = False):
         if board_size >= 8:
@@ -59,8 +63,11 @@ class halma_GUI:
         self.red_goal = (self.board_size-1,self.board_size-1)
         self.is_player_1_AI = add_AI_p1
         self.list_of_red_gold_nodes = self._make_reds_list_goal_nodes_list()
+        self.list_of_red_gold_nodes = list(reversed(self.list_of_red_gold_nodes))
         self.is_player_2_AI_aka_green = add_AI_p2
         self.list_of_green_gold_nodes = self._make_greens_list_goal_nodes_list()
+
+
 
 
 # These sets of function are used to setup the GUI.
@@ -297,9 +304,7 @@ class halma_GUI:
         else:
             flag = True
 
-        if flag:
-            string = "Player 1 (red) wins"
-            self.status_label.configure(text=string)
+        return True
 
     # green wins when all of its pieces are in the top left corner
     # loops through top left 4x4 square ignoring non-goal zones,
@@ -348,10 +353,7 @@ class halma_GUI:
         else:
             flag = True
 
-        if flag:
-            print('Green Wins')
-            string = "Player 2 (green) wins"
-            self.status_label.configure(text=string)
+        return True
 
     # gets all the peg locations of a certain color, foundation for AI movement
     # returns a list of all locations where pegs exists for this player
@@ -505,6 +507,7 @@ class halma_GUI:
             string = "Player's (" + color + ") turn"
             self.player_label.configure(text=string)
             self.has_jumped = False
+            self.timer_Label.configure(text="Timer: 60 seconds remaining")
             if self.is_player_2_AI_aka_green:
                 self.move(0,0)
         elif self.player == 2 and self.is_player_2_AI_aka_green:
@@ -518,6 +521,7 @@ class halma_GUI:
             string = "Player's (" + color + ") turn"
             self.player_label.configure(text=string)
             self.has_jumped = False
+            self.timer_Label.configure(text="Timer: 60 seconds remaining")
             if self.is_player_1_AI:
                 self.move(0,0)
 
@@ -709,14 +713,20 @@ class halma_GUI:
     def _test_print_internal_board(self, color):
 
         if color == 'red':
+
+            #test_move = self._iterative_minimax(False)
+            #test_move = self.minimax_decision('red', 0, 2, 40)
+            test_move = self.minimax_decision_ab('red', 0, 10, 40)
             print("Best move for RED: (x1, y1, x2, y2, h)")
-            test_move = self._iterative_minimax(False)
             print(test_move)
             self._AI_move_pawn(test_move,color)
             self._display_minimax_stats()
         else:
+
+            #test_move = self._iterative_minimax_for_green(False)
+            #test_move = self.minimax_decision('green', 0, 2, 40)
             print("Best move for GREEN: (x1, y1, x2, y2, h)")
-            test_move = self._iterative_minimax_for_green(False)
+            test_move = self.minimax_decision_ab('green', 0, 10, 40)
             print(test_move)
             self._AI_move_pawn(test_move,color)
             self._display_minimax_stats()
@@ -937,9 +947,9 @@ class halma_GUI:
         return best_red_move
 
     def _display_minimax_stats(self):
-        print('Minimax Time:', self.minimax_time)
-        print('Minimax Depth:', self.minimax_depth)
-        print('Minimax Boards Explored:', self.minimax_boards_explored)
+        print('Minimax Time:', self.ab_time)
+        print('Minimax Depth:', self.ab_depth)
+        print('Minimax Boards Explored:', self.ab_board)
 
 
     # function calls minimax repeatedly, each call one step deeper
@@ -1018,12 +1028,6 @@ class halma_GUI:
 #=======================================================================================================================
 
 
-
-
-
-
-
-
     def _AI_move_pawn(self, move, color):
         time.sleep(0.05)
         self.string_board[move[0]][move[1]] = 'w'
@@ -1038,12 +1042,14 @@ class halma_GUI:
                 self.string_board[move[2]][move[3]] = 'r'
                 random_picker = random.SystemRandom()
                 if len(self.list_of_red_gold_nodes) != 0:
-                    temp_goal = random_picker.choice(self.list_of_red_gold_nodes)
+                    temp_goal = self.list_of_red_gold_nodes[0]
+                    #temp_goal = random_picker.choice(self.list_of_red_gold_nodes)
                     while temp_goal != None and self._look_to_see_if_a_pawn_is_at_goal(temp_goal,'red'):
                         self.string_board[temp_goal[0]][temp_goal[1]] = 'f'
                         self.list_of_red_gold_nodes.remove(temp_goal)
                         if len(self.list_of_red_gold_nodes) != 0:
-                            temp_goal = random_picker.choice(self.list_of_red_gold_nodes)
+                            temp_goal = self.list_of_red_gold_nodes[0]
+                            #temp_goal = random_picker.choice(self.list_of_red_gold_nodes)
                         else:
                             temp_goal = self.red_goal
                     self.red_goal = temp_goal
@@ -1060,12 +1066,14 @@ class halma_GUI:
                 self.string_board[move[2]][move[3]] = 'g'
                 random_picker = random.SystemRandom()
                 if len(self.list_of_green_gold_nodes) != 0:
-                    temp_goal = random_picker.choice(self.list_of_green_gold_nodes)
+                    temp_goal = self.list_of_green_gold_nodes[0]
+                    #temp_goal = random_picker.choice(self.list_of_green_gold_nodes)
                     while temp_goal != None and self._look_to_see_if_a_pawn_is_at_goal(temp_goal,'green'):
                         self.string_board[temp_goal[0]][temp_goal[1]] = 'f'
                         self.list_of_green_gold_nodes.remove(temp_goal)
                         if len(self.list_of_green_gold_nodes) != 0:
-                            temp_goal = random_picker.choice(self.list_of_green_gold_nodes)
+                            temp_goal = self.list_of_green_gold_nodes[0]
+                            #temp_goal = random_picker.choice(self.list_of_green_gold_nodes)
                         else:
                             temp_goal = self.green_goal
                     self.green_goal = temp_goal
@@ -1086,3 +1094,179 @@ class halma_GUI:
                 return True
             else:
                 return False
+
+# james todds attempt to adding min max.5
+
+    def minimax_decision(self, color, depth, depth_limit, time_limit):
+        current_time = time.time()
+        end_time = time.time() + time_limit-10
+
+        next_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
+        for row in range(self.board_size):
+            for column in range(self.board_size):
+                next_board[row][column] = self.string_board[row][column]
+        u = 999999999999999999999999999999999999999999999999
+        u_move = None
+        my_moves = self._make_internal_move_list_for(color,next_board)
+        for move in my_moves:
+            new_board_states = self.result(move,next_board, color)
+            for index in range(len(new_board_states[0])):
+                test_u = self.min_value(new_board_states[0][index], color, depth, depth_limit, end_time)
+                if test_u < u:
+                    u = test_u
+                    u_move = new_board_states[1][index]
+        return u_move
+
+    def max_value(self,state, color, depth, depth_limit, end_time):
+        if self.terminal_test(color, depth, depth_limit, end_time):
+            return self.utility(self._make_internal_move_list_for(color,state))
+        u = -999999999999999999999999999999999999999999999999
+
+        my_moves = self._make_internal_move_list_for(color, state)
+        for move in my_moves:
+            new_board_states = self.result(move, state, color)
+            for index in range(len(new_board_states[0])):
+                test_u = self.min_value(new_board_states[0][index], color, depth + 1, depth_limit, end_time)
+                u = max(u,test_u)
+
+        return u
+
+    def min_value(self, state, color, depth, depth_limit, end_time):
+        if self.terminal_test(color, depth, depth_limit, end_time):
+            return self.utility(self._make_internal_move_list_for(color,state))
+        u = 999999999999999999999999999999999999999999999999
+
+        my_moves = self._make_internal_move_list_for(color, state)
+        for move in my_moves:
+            new_board_states = self.result(move, state, color)
+            for index in range(len(new_board_states[0])):
+                test_u = self.max_value(new_board_states[0][index], color, depth + 1, depth_limit, end_time)
+                u = min(u,test_u)
+        return u
+
+    def terminal_test(self, color, depth, depth_limit, end_time):
+        current_time = time.time()
+        if current_time >= end_time:
+            return True
+        if depth == depth_limit:
+            return True
+        else:
+            if color == 'red':
+                if self._check_red_wins():
+                    return True
+            else:
+                if self._check_green_wins():
+                    return True
+        return False
+
+    def result(self, move_list, next_board, color):
+        new_states_lists = []
+        move_tuples_list = []
+        index = 1
+        flat_move = self.remove_inner_lists(move_list)
+        for move in range(len(move_list) - 1):
+            self.ab_board += 1
+            temp_board = self.copy(next_board)
+            if color == 'red':
+                temp_board[flat_move[0][0]][flat_move[0][1]] = 'w'
+                temp_board[flat_move[index][0]][flat_move[index][1]] = 'r'
+                move_tuples_list.append((flat_move[0][0],flat_move[0][1],flat_move[index][0],flat_move[index][1]))
+            else:
+                temp_board[flat_move[0][0]][flat_move[0][1]] = 'w'
+                temp_board[flat_move[index][0]][flat_move[index][1]] = 'g'
+                move_tuples_list.append((flat_move[0][0], flat_move[0][1], flat_move[index][0], flat_move[index][1]))
+            index += 1
+            new_states_lists.append(temp_board)
+        return  new_states_lists, move_tuples_list
+
+    def utility(self, moves):
+        returning_number = 0
+
+        for move in moves:
+            if isinstance(move, list):
+                returning_number += self.utility(move)
+            else:
+
+                returning_number += move[2]
+        return returning_number
+
+    def remove_inner_lists(self, move_list):
+        returning_list = []
+        for move in move_list:
+
+            if isinstance(move, list):
+
+                returning_list.extend(self.remove_inner_lists(move))
+            else:
+
+                returning_list.append(move)
+        return returning_list
+
+    def copy(self, copy_me):
+        returning_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
+        for row in range(self.board_size):
+            for column in range(self.board_size):
+                returning_board[row][column] = copy_me[row][column]
+        return returning_board
+
+
+
+    #=========================== james try are alpha beta search =======
+    def minimax_decision_ab(self, color, depth, depth_limit, time_limit):
+        self.ab_board = 0
+        current_time = time.time()
+        end_time = time.time() + time_limit-10
+
+        next_board = [[0 for x in range(self.board_size)] for y in range(self.board_size)]
+        for row in range(self.board_size):
+            for column in range(self.board_size):
+                next_board[row][column] = self.string_board[row][column]
+        u = -999999999999999999999999999999999999999999999999
+        u_move = None
+        my_moves = self._make_internal_move_list_for(color,next_board)
+        for move in my_moves:
+            new_board_states = self.result(move,next_board, color)
+            for index in range(len(new_board_states[0])):
+                test_u = self.max_value_ab(new_board_states[0][index], color, depth, depth_limit, end_time, -999999999999999999999999999999999999999999999999,999999999999999999999999999999999999999999999999)
+                if test_u > u:
+                    u = test_u
+                    u_move = new_board_states[1][index]
+        self.ab_time = time.time() - current_time
+        return u_move
+
+    def max_value_ab(self,state, color, depth, depth_limit, end_time, a, b):
+        if depth > self.ab_depth:
+            self.ab_depth = depth
+        if self.terminal_test(color, depth, depth_limit, end_time):
+            return self.utility(self._make_internal_move_list_for(color,state))
+        u = -999999999999999999999999999999999999999999999999
+        new_a = a
+        my_moves = self._make_internal_move_list_for(color, state)
+        for move in my_moves:
+            new_board_states = self.result(move, state, color)
+            for index in range(len(new_board_states[0])):
+                test_u = self.min_value_ab(new_board_states[0][index], color, depth + 1, depth_limit, end_time, new_a,b)
+                u = max(u,test_u)
+                new_a = max(new_a, u)
+                if u >= b:
+                    return u
+
+        return u
+
+    def min_value_ab(self, state, color, depth, depth_limit, end_time, a, b):
+        if depth > self.ab_depth:
+            self.ab_depth = depth
+        if self.terminal_test(color, depth, depth_limit, end_time):
+            return self.utility(self._make_internal_move_list_for(color,state))
+        u = 999999999999999999999999999999999999999999999999
+        new_b = b
+        my_moves = self._make_internal_move_list_for(color, state)
+        for move in my_moves:
+            new_board_states = self.result(move, state, color)
+            for index in range(len(new_board_states[0])):
+                test_u = self.max_value_ab(new_board_states[0][index], color, depth + 1, depth_limit, end_time,a,new_b)
+                u = min(u,test_u)
+                if u <= a:
+                    return u
+                new_b = min(new_b,u)
+        return u
