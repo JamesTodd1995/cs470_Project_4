@@ -35,6 +35,8 @@ class halma_GUI:
     minimax_time = 0.0
     minimax_depth = 1
     minimax_boards_explored = 1
+    red_score = 0
+    green_score = 0
     is_player_2_AI_aka_green = False
     list_of_green_gold_nodes = None
 
@@ -248,12 +250,24 @@ class halma_GUI:
             time.sleep(2)
             self.move(0,0)
 
+    def _get_board_scores(self):
+        red_pegs = self._get_all_peg_positions('red', 0, 0, [])
+        green_pegs = self._get_all_peg_positions('green', 0, 0, [])
+        for i in range(0, len(red_pegs)):
+            self.red_score = self.red_score + 1 / (self._distance_to_goal(red_pegs[i], [self.board_size - 1, self.board_size - 1]) + 1)
+            self.green_score = self.green_score + 1 / (self._distance_to_goal(green_pegs[i],[0, 0]) + 1)
+        self.red_score = self.red_score + 5
+        self.green_score  = self.green_score + 5
+        scores = 'Red Score: '+ str(self.red_score) + '\nGreen Score: '+ str(self.green_score)
+        return scores
+
     # red wins when all of its pieces are in the bottom right corner
     # loops through top left 4x4 square ignoring non-goal zones,
     # checks that each one is colored red
     # if both loops terminate without the method returning,
     # red is in a win state
     def _check_red_wins(self):
+        self.red_score = 0
         # for i in range(0,3):
         #    print(self.internal_board)
         #    for j in range(0,3):
@@ -275,6 +289,7 @@ class halma_GUI:
                 flag = False
                 return False
             else:
+                self.red_score = self.red_score + 100
                 flag = True
 
         for i in range(1, 4):
@@ -282,6 +297,7 @@ class halma_GUI:
                 flag = False
                 return False
             else:
+                self.red_score = self.red_score + 100
                 flag = True
 
         for i in range(1, 3):
@@ -289,12 +305,14 @@ class halma_GUI:
                 flag = False
                 return False
             else:
+                self.red_score = self.red_score + 100
                 flag = True
 
         if self.internal_board[self.board_size - 4][self.board_size - 1].cget('bg') != 'red':
             flag = False
             return False
         else:
+            self.red_score = self.red_score + 100
             flag = True
 
         if flag:
@@ -307,6 +325,7 @@ class halma_GUI:
     # if both loops terminate without the method returning,
     # green is in a win state
     def _check_green_wins(self):
+        self.green_score = 0
         #for i in range(0,3):
         #    for j in range(0,3):
         #        if (i + j) == 5 or (i + j) == 6:
@@ -326,6 +345,7 @@ class halma_GUI:
                 flag = False
                 return False
             else:
+                self.green_score = self.green_score + 100
                 flag = True
 
         for i in range(0, 3):
@@ -333,6 +353,7 @@ class halma_GUI:
                 flag = False
                 return False
             else:
+                self.green_score = self.green_score + 100
                 flag = True
 
         for i in range(0, 2):
@@ -340,12 +361,14 @@ class halma_GUI:
                 flag = False
                 return False
             else:
+                self.green_score = self.green_score + 100
                 flag = True
 
         if self.internal_board[3][0].cget('bg') != 'green':
             flag = False
             return False
         else:
+            self.green_score = self.green_score + 100
             flag = True
 
         if flag:
@@ -707,6 +730,40 @@ class halma_GUI:
                 self.move(0,0)
 
     def _test_print_internal_board(self, color):
+        # print("==============================================")
+        # print("==============================================")
+        # current_board = self.internal_board
+        # #self._test_print_moves_list(self._make_internal_move_list_for('red', current_board))
+        # print("==============================================")
+        # #self._test_print_moves_list(self._flatten_move_list(self._make_internal_move_list_for('red', current_board)))
+        # print("==============================================")
+        # for column in range(self.board_size):
+        #     print("| ", end="")
+        #     for row in range(self.board_size):
+        #         print(self.string_board[row][column], " | ", end="")
+        #     print()
+        # print("==============================================")
+        print("Best move: (x1, y1, x2, y2, h)")
+        test_move = self._iterative_minimax(False)
+        print(test_move)
+        self._AI_move_pawn(test_move,color)
+        self._display_minimax_stats()
+        print(self._get_board_scores())
+        # print("==============================================")
+        # print("==============================================")
+        # #self._test_print_moves_list(self._make_internal_move_list_for('green'))
+        # print("==============================================")
+        # print("==============================================")
+        # for column in range(self.board_size):
+        #     print("| ", end="")
+        #     for row in range(self.board_size):
+        #
+        #         pawn = self.internal_board[row][column].cget('bg')
+        #         if pawn == 'gray':
+        #             print("w", " | ", end="")
+        #         else:
+        #             print(pawn[0], " | ", end="")
+        #     print()
 
         if color == 'red':
             print("Best move for RED: (x1, y1, x2, y2, h)")
@@ -956,6 +1013,7 @@ class halma_GUI:
             next_board[current_best[0]][current_best[1]] = 'w'
             next_board[current_best[2]][current_best[3]] = 'r'
             # loop another two moves into the future for a total of three ply
+            self.minimax_depth = level
         return current_best
 
 #=======================================================================================================================
