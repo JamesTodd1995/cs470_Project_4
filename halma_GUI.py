@@ -221,35 +221,103 @@ class halma_GUI:
     # if both loops terminate without the method returning,
     # red is in a win state
     def _check_red_wins(self):
-        for i in range(0,3):
-            for j in range(0,3):
-                if (i + j) == 5 or (i + j) == 6:
-                    # skip
-                    print("")
-                elif self.internal_board[self.board_size - (1 + i)][self.board_size - (1+ j)].cget('bg') != 'red':
-                    return False
-        string = "Player 1 (red) wins."
-        self.status_label.configure(text=string)
-        print("Red wins")
-        return True
+        # for i in range(0,3):
+        #    print(self.internal_board)
+        #    for j in range(0,3):
+        #       print("Checked square:", [i, j])
+        #        if i == j:
+        #            # skip
+        #            print("")
+        #        elif self.internal_board[self.board_size - (1 + i)][self.board_size - (1+ j)].cget('bg') != 'red':
+        #            return False
+        #string = "Player 1 (red) wins."
+        #self.status_label.configure(text=string)
+        #print("Red wins")
+        #return True
 
+        # temporary for tournement first round
+        flag = False
+        for i in range(1, 5):
+            if self.internal_board[self.board_size - 1][self.board_size - i].cget('bg') != 'red':
+                flag = False
+                return False
+            else:
+                flag = True
+
+        for i in range(1, 4):
+            if self.internal_board[self.board_size - 2][self.board_size - i].cget('bg') != 'red':
+                flag = False
+                return False
+            else:
+                flag = True
+
+        for i in range(1, 3):
+            if self.internal_board[self.board_size - 3][self.board_size - i].cget('bg') != 'red':
+                flag = False
+                return False
+            else:
+                flag = True
+
+        if self.internal_board[self.board_size - 4][self.board_size - 1].cget('bg') != 'red':
+            flag = False
+            return False
+        else:
+            flag = True
+
+        if flag:
+            string = "Player 1 (red) wins"
+            self.status_label.configure(text=string)
     # green wins when all of its pieces are in the top left corner
     # loops through top left 4x4 square ignoring non-goal zones,
     # checks that each one is colored green
     # if both loops terminate without the method returning,
     # green is in a win state
     def _check_green_wins(self):
-        for i in range(0,3):
-            for j in range(0,3):
-                if (i + j) == 5 or (i + j) == 6:
-                    # skip
-                    print("")
-                elif self.internal_board[i][j].cget('bg') != 'green':
-                    return False
-        string = "Player 2 (green) wins."
-        self.status_label.configure(text=string)
-        print("Green wins")
-        return True
+        #for i in range(0,3):
+        #    for j in range(0,3):
+        #        if (i + j) == 5 or (i + j) == 6:
+        #            # skip
+        #            print("")
+        #        elif self.internal_board[i][j].cget('bg') != 'green':
+        #            return False
+        #string = "Player 2 (green) wins."
+        #self.status_label.configure(text=string)
+        #print("Green wins")
+        #return True
+
+        # temporary for tournement first round
+        flag = False
+        for i in range(0, 4):
+            if self.internal_board[0][i].cget('bg') != 'green':
+                flag = False
+                return False
+            else:
+                flag = True
+
+        for i in range(0, 3):
+            if self.internal_board[1][i].cget('bg') != 'green':
+                flag = False
+                return False
+            else:
+                flag = True
+
+        for i in range(0, 2):
+            if self.internal_board[2][i].cget('bg') != 'green':
+                flag = False
+                return False
+            else:
+                flag = True
+
+        if self.internal_board[3][0].cget('bg') != 'green':
+            flag = False
+            return False
+        else:
+            flag = True
+
+        if flag:
+            print('Green Wins')
+            string = "Player 2 (green) wins"
+            self.status_label.configure(text=string)
 
     # gets all the peg locations of a certain color, foundation for AI movement
     # returns a list of all locations where pegs exists for this player
